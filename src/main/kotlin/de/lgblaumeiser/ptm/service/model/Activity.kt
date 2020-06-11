@@ -9,4 +9,5 @@ data class Activity (
     val projectId: String,
     val activityName: String,
     val activityId: String,
-    val hidden: Boolean = false)
+    val hidden: Boolean = false
+)
