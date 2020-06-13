@@ -14,6 +14,10 @@ data class User (
     private val pattern = "^(.+)@(.+)$".toRegex()
 
     init {
-        require(pattern.containsMatchIn(email))
+        require(username.isNotBlank()) { "username field must not be empty for user" }
+        require(password.isNotBlank()) { "password field must not be empty for user" }
+        require(question.isNotBlank()) { "question field must not be empty for user" }
+        require(answer.isNotBlank()) { "answer field must not be empty for user" }
+        require(pattern.matches(email)) { "email field does not correspond to an email address, was $email" }
     }
 }
