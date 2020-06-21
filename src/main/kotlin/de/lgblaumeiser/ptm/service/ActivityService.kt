@@ -55,7 +55,6 @@ class ActivityService(val store: Store<Activity>) {
 
     fun deleteActivity(user: String, id: Long) =
         getActivityById(user, id).let { store.delete(id) }
-
 }
 
 fun Activity.ownedByUserOrException(requester: String): Activity {
