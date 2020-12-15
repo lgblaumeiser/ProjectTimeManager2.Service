@@ -3,16 +3,16 @@
 package de.lgblaumeiser.ptm.service.store
 
 interface Store<T> {
-    fun retrieveAll(): List<T>
+    fun retrieveAll(user: String): List<T>
 
-    // Throws NotFoundException, if element is not in storage
-    fun retrieveById(id: Long): T
+    // Throws NotFoundException, if element is not in storage or not accesible for user
+    fun retrieveById(user: String, id: Long): T
 
-    fun retrieveByProperty(name: String, values: Collection<Any>): List<T>
+    fun retrieveByProperty(user: String, name: String, values: Collection<Any>): List<T>
 
-    fun create(data: T): Long
+    fun create(user: String, data: T): T
 
-    fun update(data: T)
+    fun update(user: String, data: T)
 
-    fun delete(id: Long)
+    fun delete(user: String, id: Long)
 }

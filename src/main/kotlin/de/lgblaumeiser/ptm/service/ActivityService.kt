@@ -7,13 +7,11 @@ import de.lgblaumeiser.ptm.service.store.Store
 
 class ActivityService(val store: Store<Activity>) {
     fun getActivities(user: String) = store
-        .retrieveAll()
-        .filter { sameUser(it.user, user) }
+        .retrieveAll(user)
         .sortedWith(compareBy<Activity> { it.projectid.toUpperCase() }.thenBy { it.activityid.toUpperCase() })
 
     fun getActivityById(user: String, id: Long): Activity = store
-        .retrieveById(id)
-        .ownedByUserOrException(user)
+        .retrieveById(user, id)
 
     fun addActivity(
         user: String,
@@ -22,6 +20,7 @@ class ActivityService(val store: Store<Activity>) {
         activityname: String,
         activityid: String
     ) = store.create(
+        user,
         Activity(
             user = user,
             projectname = projectname,
@@ -41,6 +40,7 @@ class ActivityService(val store: Store<Activity>) {
         id: Long
     ) = getActivityById(user, id).let {
         store.update(
+            user,
             Activity(
                 id = it.id,
                 user = it.user,
@@ -54,12 +54,5 @@ class ActivityService(val store: Store<Activity>) {
     }
 
     fun deleteActivity(user: String, id: Long) =
-        getActivityById(user, id).let { store.delete(id) }
-}
-
-fun Activity.ownedByUserOrException(requester: String): Activity {
-    if(differentUser(this.user, requester)) {
-        throw UserAccessException("User mismatch, resource does not belong to $requester")
-    }
-    return this
+        getActivityById(user, id).let { store.delete(user, id) }
 }

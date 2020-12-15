@@ -9,14 +9,12 @@ import java.time.LocalTime
 
 class BookingService(val store: Store<Booking>) {
     fun getBookings(user: String) = store
-        .retrieveAll()
-        .filter { sameUser(it.user, user) }
-        .sortedWith(compareBy<Booking> { it.starttime }.thenBy { it.bookingday })
+        .retrieveAll(user)
+        .sortedWith(compareBy<Booking> { it.bookingday }.thenBy { it.starttime })
 
     fun getBookings(user: String, startday: String, endday: String? = null): List<Booking> = store
-        .retrieveByProperty("bookingday", computeDays(startday, endday))
-        .filter { sameUser(it.user, user) }
-        .sortedWith(compareBy<Booking> { it.starttime }.thenBy { it.bookingday })
+        .retrieveByProperty(user, "bookingday", computeDays(startday, endday))
+        .sortedWith(compareBy<Booking> { it.bookingday }.thenBy { it.starttime })
 
     private fun computeDays(startday: String, endday: String?): List<LocalDate> {
         val parsedstartday = LocalDate.parse(startday)
@@ -31,8 +29,7 @@ class BookingService(val store: Store<Booking>) {
     }
 
     fun getBookingById(user: String, id: Long) = store
-        .retrieveById(id)
-        .ownedByUserOrException(user)
+        .retrieveById(user, id)
 
     fun addBooking(
         user: String,
@@ -41,9 +38,10 @@ class BookingService(val store: Store<Booking>) {
         endtime: String? = null,
         activity: Long,
         comment: String = ""
-    ): Long {
+    ): Booking {
         retrieveOpenBooking(user, bookingday)?.let { changeBooking(id = it.id, user = it.user, endtime = starttime) }
         return store.create(
+            user,
             Booking(
                 user = user,
                 bookingday = LocalDate.parse(bookingday),
@@ -69,6 +67,7 @@ class BookingService(val store: Store<Booking>) {
         id: Long
     ) = getBookingById(user, id).let {
         store.update(
+            user,
             Booking(
                 id = it.id,
                 user = it.user,
@@ -86,22 +85,15 @@ class BookingService(val store: Store<Booking>) {
         starttime: String,
         duration: Long = 30L,
         id: Long
-    ): Long {
+    ): Booking {
         val booking = getBookingById(user, id)
         val parsedstarttime = LocalTime.parse(starttime)
         val firstBooking = booking.copy(endtime = parsedstarttime)
         val secondBooking = booking.copy(starttime = parsedstarttime.plusMinutes(duration))
-        store.update(firstBooking)
-        return store.create(secondBooking)
+        store.update(user, firstBooking)
+        return store.create(user, secondBooking)
     }
 
     fun deleteBooking(user: String, id: Long) =
-        getBookingById(user, id).let { store.delete(id) }
-}
-
-fun Booking.ownedByUserOrException(requester: String): Booking {
-    if (differentUser(this.user, requester)) {
-        throw UserAccessException("User mismatch, resource does not belong to $requester")
-    }
-    return this
+        getBookingById(user, id).let { store.delete(user, id) }
 }
