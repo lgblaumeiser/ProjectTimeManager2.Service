@@ -17,5 +17,6 @@ data class Booking (
     init {
         require(user.isNotBlank()) { "user field must not be empty for booking" }
         require(endtime?.isAfter(starttime) ?: true) { "starttime of a booking must be prior to endtime" }
+        require(activity > 0L)
     }
 }
