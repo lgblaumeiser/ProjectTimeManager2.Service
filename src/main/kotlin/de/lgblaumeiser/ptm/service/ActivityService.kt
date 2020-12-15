@@ -20,6 +20,7 @@ class ActivityService(val store: Store<Activity>) {
         activityname: String,
         activityid: String
     ) = store.create(
+        user,
         Activity(
             user = user,
             projectname = projectname,
@@ -39,6 +40,7 @@ class ActivityService(val store: Store<Activity>) {
         id: Long
     ) = getActivityById(user, id).let {
         store.update(
+            user,
             Activity(
                 id = it.id,
                 user = it.user,

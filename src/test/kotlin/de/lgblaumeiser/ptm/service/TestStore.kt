@@ -31,7 +31,8 @@ class ActivityTestStore: Store<Activity> {
         }
     }
 
-    override fun create(data: Activity): Activity {
+    override fun create(user: String, data: Activity): Activity {
+        require(data.user.equals(user, true))
         val id = nextId()
         activities.add(data.copy(id = id))
         return data.copy(id = id)
@@ -39,7 +40,8 @@ class ActivityTestStore: Store<Activity> {
 
     private fun nextId() = activities.map { it.id }.max() ?: 0L + 1L
 
-    override fun update(data: Activity) {
+    override fun update(user: String, data: Activity) {
+        require(data.user.equals(user, true))
         delete(data.user, data.id)
         activities.add(data)
     }

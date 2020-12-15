@@ -41,6 +41,7 @@ class BookingService(val store: Store<Booking>) {
     ): Booking {
         retrieveOpenBooking(user, bookingday)?.let { changeBooking(id = it.id, user = it.user, endtime = starttime) }
         return store.create(
+            user,
             Booking(
                 user = user,
                 bookingday = LocalDate.parse(bookingday),
@@ -66,6 +67,7 @@ class BookingService(val store: Store<Booking>) {
         id: Long
     ) = getBookingById(user, id).let {
         store.update(
+            user,
             Booking(
                 id = it.id,
                 user = it.user,
@@ -88,8 +90,8 @@ class BookingService(val store: Store<Booking>) {
         val parsedstarttime = LocalTime.parse(starttime)
         val firstBooking = booking.copy(endtime = parsedstarttime)
         val secondBooking = booking.copy(starttime = parsedstarttime.plusMinutes(duration))
-        store.update(firstBooking)
-        return store.create(secondBooking)
+        store.update(user, firstBooking)
+        return store.create(user, secondBooking)
     }
 
     fun deleteBooking(user: String, id: Long) =

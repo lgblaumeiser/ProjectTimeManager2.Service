@@ -17,6 +17,7 @@ class UserService(val store: Store<User>, val activities: ActivityService, val b
     ): User {
         require(retrieveUserRecord(username) == null) { "A user with username $username already exists" }
         val user = store.create(
+            username,
             User(
                 username = username,
                 password = password,
@@ -26,7 +27,7 @@ class UserService(val store: Store<User>, val activities: ActivityService, val b
             )
         )
         if (user.id == 1L) // First user gets admin rights
-            store.update(user.copy(admin = true))
+            store.update(username, user.copy(admin = true))
         return user
     }
 
@@ -36,7 +37,7 @@ class UserService(val store: Store<User>, val activities: ActivityService, val b
             throw IllegalAccessException("Given answer does not match stored answer, given: $answer")
         }
         val newPassword = UUID.randomUUID().toString();
-        store.update(user.copy(password=newPassword))
+        store.update(username, user.copy(password=newPassword))
         return newPassword
     }
 
@@ -51,6 +52,7 @@ class UserService(val store: Store<User>, val activities: ActivityService, val b
         answer: String? = null
     ) = retrieveExistingUserRecord(username).let {
         store.update(
+            username,
             User(
                 id = it.id,
                 username = it.username,

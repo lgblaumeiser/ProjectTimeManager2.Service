@@ -10,9 +10,9 @@ interface Store<T> {
 
     fun retrieveByProperty(user: String, name: String, values: Collection<Any>): List<T>
 
-    fun create(data: T): T
+    fun create(user: String, data: T): T
 
-    fun update(data: T)
+    fun update(user: String, data: T)
 
     fun delete(user: String, id: Long)
 }
