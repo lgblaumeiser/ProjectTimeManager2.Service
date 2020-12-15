@@ -8,12 +8,15 @@ import de.lgblaumeiser.ptm.service.store.Store
 class ActivityTestStore: Store<Activity> {
     val activities = mutableListOf<Activity>()
 
-    override fun retrieveAll() = activities.toList()
+    override fun retrieveAll(user: String) = activities.toList().filter { it.user.equals(user, true) }
 
-    override fun retrieveById(id: Long) = activities.filter { it.id == id }.firstOrNull()
-        ?: throw NotFoundException("Activity with id $id not found")
+    override fun retrieveById(user: String, id: Long) = activities
+        .filter { it.id == id }
+        .filter { it.user.equals(user, true) }
+        .firstOrNull()
+        ?: throw IllegalStateException("Activity with id $id not found")
 
-    override fun retrieveByProperty(name: String, values: Collection<Any>) = activities.filter { hasProperty(it, name, values) }
+    override fun retrieveByProperty(user: String, name: String, values: Collection<Any>) = activities.filter { hasProperty(it, name, values) }
 
     private fun hasProperty(activity: Activity, name: String, values: Collection<Any>): Boolean {
         when(name) {
@@ -28,20 +31,20 @@ class ActivityTestStore: Store<Activity> {
         }
     }
 
-    override fun create(data: Activity): Long {
+    override fun create(data: Activity): Activity {
         val id = nextId()
         activities.add(data.copy(id = id))
-        return id
+        return data.copy(id = id)
     }
 
     private fun nextId() = activities.map { it.id }.max() ?: 0L + 1L
 
     override fun update(data: Activity) {
-        delete(data.id)
+        delete(data.user, data.id)
         activities.add(data)
     }
 
-    override fun delete(id: Long) {
-        activities.remove(retrieveById(id))
+    override fun delete(user: String, id: Long) {
+        activities.remove(retrieveById(user, id))
     }
 }

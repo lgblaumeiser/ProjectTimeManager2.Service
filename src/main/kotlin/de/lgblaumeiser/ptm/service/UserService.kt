@@ -4,6 +4,7 @@ package de.lgblaumeiser.ptm.service
 
 import de.lgblaumeiser.ptm.service.model.User
 import de.lgblaumeiser.ptm.service.store.Store
+import java.lang.IllegalStateException
 import java.util.UUID
 
 class UserService(val store: Store<User>, val activities: ActivityService, val bookings: BookingService) {
@@ -13,9 +14,9 @@ class UserService(val store: Store<User>, val activities: ActivityService, val b
         email: String,
         question: String,
         answer: String
-    ): Long {
+    ): User {
         require(retrieveUserRecord(username) == null) { "A user with username $username already exists" }
-        val id = store.create(
+        val user = store.create(
             User(
                 username = username,
                 password = password,
@@ -24,9 +25,9 @@ class UserService(val store: Store<User>, val activities: ActivityService, val b
                 answer = answer
             )
         )
-        if (id == 1L) // First user gets admin rights
-            store.create(store.retrieveById(id).copy(admin = true))
-        return id
+        if (user.id == 1L) // First user gets admin rights
+            store.update(user.copy(admin = true))
+        return user
     }
 
     fun resetPassword(username: String, answer: String): String {
@@ -48,20 +49,15 @@ class UserService(val store: Store<User>, val activities: ActivityService, val b
         email: String? = null,
         question: String? = null,
         answer: String? = null
-    ) {
-        val user = retrieveExistingUserRecord(username)
-        val newPassword = password ?: user.password
-        val newEmail = email ?: user.email
-        val newQuestion = question ?: user.question
-        val newAnswer = answer ?: user.answer
+    ) = retrieveExistingUserRecord(username).let {
         store.update(
             User(
-                id = user.id,
-                username = user.username,
-                password = newPassword,
-                email = newEmail,
-                question = newQuestion,
-                answer = newAnswer
+                id = it.id,
+                username = it.username,
+                password = password ?: it.password,
+                email = email ?: it.email,
+                question = question ?: it.question,
+                answer = answer ?: it.answer
             )
         )
     }
@@ -69,12 +65,12 @@ class UserService(val store: Store<User>, val activities: ActivityService, val b
     fun deleteUser(username: String) {
         activities.getActivities(username).forEach { activities.deleteActivity(username, it.id) }
         bookings.getBookings(username).forEach { bookings.deleteBooking(username, it.id) }
-        retrieveExistingUserRecord(username).let { store.delete(it.id) }
+        retrieveExistingUserRecord(username).let { store.delete(username, it.id) }
     }
 
     private fun retrieveUserRecord(user: String) =
-        store.retrieveByProperty("username", listOf(user)).firstOrNull()
+        store.retrieveByProperty(user, "username", listOf(user)).firstOrNull()
 
     private fun retrieveExistingUserRecord(user: String) =
-        retrieveUserRecord(user) ?: throw NotFoundException("User $user not found in database")
+        retrieveUserRecord(user) ?: throw IllegalStateException("User $user not found in database")
 }
