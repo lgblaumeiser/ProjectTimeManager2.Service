@@ -38,7 +38,7 @@ class ActivityTestStore: Store<Activity> {
         return data.copy(id = id)
     }
 
-    private fun nextId() = activities.map { it.id }.max() ?: 0L + 1L
+    private fun nextId() = ( activities.map { it.id }.max() ?: 0L ) + 1L
 
     override fun update(user: String, data: Activity) {
         require(data.user.equals(user, true))
