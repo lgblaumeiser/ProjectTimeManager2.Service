@@ -6,8 +6,9 @@ import de.lgblaumeiser.ptm.service.model.User
 import de.lgblaumeiser.ptm.service.store.Store
 import java.lang.IllegalStateException
 import java.util.UUID
+import at.favre.lib.crypto.bcrypt.BCrypt
 
-class UserService(val store: Store<User>, val activities: ActivityService, val bookings: BookingService) {
+class UserService(private val store: Store<User>, private val activities: ActivityService, private val bookings: BookingService) {
     fun addUser(
         username: String,
         password: String,
@@ -20,10 +21,10 @@ class UserService(val store: Store<User>, val activities: ActivityService, val b
             username,
             User(
                 username = username,
-                password = password,
+                password = BCrypt.withDefaults().hashToString(12, password.toCharArray()),
                 email = email,
                 question = question,
-                answer = answer
+                answer = BCrypt.withDefaults().hashToString(12, answer.toCharArray())
             )
         )
         if (user.id == 1L) // First user gets admin rights
@@ -33,16 +34,19 @@ class UserService(val store: Store<User>, val activities: ActivityService, val b
 
     fun resetPassword(username: String, answer: String): String {
         val user = retrieveExistingUserRecord(username)
-        if (!answer.equals(user.answer)) {
+        if (!BCrypt.verifyer().verify(answer.toCharArray(), user.answer).verified) {
             throw IllegalAccessException("Given answer does not match stored answer, given: $answer")
         }
-        val newPassword = UUID.randomUUID().toString();
-        store.update(username, user.copy(password=newPassword))
+        val newPassword = UUID.randomUUID().toString()
+        store.update(username, user.copy(password = BCrypt.withDefaults().hashToString(12, newPassword.toCharArray())))
         return newPassword
     }
 
     fun getUser(username: String) =
         retrieveExistingUserRecord(username).copy(password = "xxx", answer = "xxx")
+
+    fun authenticateUser(username: String, password: String) =
+        BCrypt.verifyer().verify(password.toCharArray(), retrieveExistingUserRecord(username).password).verified
 
     fun changeUser(
         username: String,
@@ -56,10 +60,10 @@ class UserService(val store: Store<User>, val activities: ActivityService, val b
             User(
                 id = it.id,
                 username = it.username,
-                password = password ?: it.password,
+                password = BCrypt.withDefaults().hashToString(12, password!!.toCharArray()) ?: it.password,
                 email = email ?: it.email,
                 question = question ?: it.question,
-                answer = answer ?: it.answer
+                answer = BCrypt.withDefaults().hashToString(12, answer!!.toCharArray()) ?: it.answer
             )
         )
     }
