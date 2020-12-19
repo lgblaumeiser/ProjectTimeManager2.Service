@@ -18,7 +18,7 @@ class BookingService(val store: Store<Booking>) {
 
     private fun computeDays(startday: String, endday: String?): List<LocalDate> {
         val parsedstartday = LocalDate.parse(startday)
-        val parsedendday = LocalDate.parse(endday) ?: parsedstartday.plusDays(1L)
+        val parsedendday = endday?.let { LocalDate.parse(endday) } ?: parsedstartday.plusDays(1L)
         val listofdays = mutableListOf<LocalDate>()
         var currentday = parsedstartday
         do {

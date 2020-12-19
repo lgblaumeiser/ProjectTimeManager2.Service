@@ -18,7 +18,7 @@ val testQuestion = "Wer ist der Bürgermeister von Wesel?"
 
 val testAnswer = "...Esel!"
 
-class UserTest: WordSpec ({
+class UserTest : WordSpec({
 
     "User validation" should {
         "should be fine with minimal fields" {
@@ -27,7 +27,8 @@ class UserTest: WordSpec ({
                 password = testPassword,
                 email = testEmail,
                 question = testQuestion,
-                answer = testAnswer)
+                answer = testAnswer
+            )
             should {
                 user.id == -1L;
                 user.username.equals(testUsername)
@@ -46,7 +47,8 @@ class UserTest: WordSpec ({
                 password = testPassword,
                 email = testEmail,
                 question = testQuestion,
-                answer = testAnswer)
+                answer = testAnswer
+            )
             val adminUser = user.copy(admin = true)
             should {
                 adminUser.id == 1L;
@@ -66,7 +68,8 @@ class UserTest: WordSpec ({
                     password = testPassword,
                     email = testEmail,
                     question = testQuestion,
-                    answer = testAnswer)
+                    answer = testAnswer
+                )
             }
         }
 
@@ -77,7 +80,8 @@ class UserTest: WordSpec ({
                     password = "",
                     email = testEmail,
                     question = testQuestion,
-                    answer = testAnswer)
+                    answer = testAnswer
+                )
             }
         }
 
@@ -88,7 +92,8 @@ class UserTest: WordSpec ({
                     password = testPassword,
                     email = "",
                     question = testQuestion,
-                    answer = testAnswer)
+                    answer = testAnswer
+                )
             }
         }
 
@@ -99,7 +104,8 @@ class UserTest: WordSpec ({
                     password = testPassword,
                     email = testWrongEmail,
                     question = testQuestion,
-                    answer = testAnswer)
+                    answer = testAnswer
+                )
             }
         }
 
@@ -110,7 +116,8 @@ class UserTest: WordSpec ({
                     password = testPassword,
                     email = testEmail,
                     question = "",
-                    answer = testAnswer)
+                    answer = testAnswer
+                )
             }
         }
 
@@ -121,7 +128,8 @@ class UserTest: WordSpec ({
                     password = testPassword,
                     email = testEmail,
                     question = testQuestion,
-                    answer = "")
+                    answer = ""
+                )
             }
         }
     }

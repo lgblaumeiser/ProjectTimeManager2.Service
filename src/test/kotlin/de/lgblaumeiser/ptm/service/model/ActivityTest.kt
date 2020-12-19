@@ -16,7 +16,7 @@ val testActivityname = "activity1"
 
 val testActivityid = "1"
 
-class ActivityTest: WordSpec ({
+class ActivityTest : WordSpec({
 
     "Activity validation" should {
         "should be fine with proper fields" {
@@ -25,7 +25,8 @@ class ActivityTest: WordSpec ({
                 projectname = testProjectname,
                 projectid = testProjectid,
                 activityname = testActivityname,
-                activityid = testActivityid)
+                activityid = testActivityid
+            )
             should {
                 activity.id == -1L;
                 activity.user.equals(testActivityUser)
@@ -65,7 +66,8 @@ class ActivityTest: WordSpec ({
                     projectname = testProjectname,
                     projectid = testProjectid,
                     activityname = testActivityname,
-                    activityid = testActivityid)
+                    activityid = testActivityid
+                )
             }
         }
 
@@ -76,7 +78,8 @@ class ActivityTest: WordSpec ({
                     projectname = "",
                     projectid = testProjectid,
                     activityname = testActivityname,
-                    activityid = testActivityid)
+                    activityid = testActivityid
+                )
             }
         }
 
@@ -87,7 +90,8 @@ class ActivityTest: WordSpec ({
                     projectname = testProjectname,
                     projectid = "",
                     activityname = testActivityname,
-                    activityid = testActivityid)
+                    activityid = testActivityid
+                )
             }
         }
 
@@ -98,7 +102,8 @@ class ActivityTest: WordSpec ({
                     projectname = testProjectname,
                     projectid = testProjectid,
                     activityname = "",
-                    activityid = testActivityid)
+                    activityid = testActivityid
+                )
             }
         }
 
@@ -109,7 +114,8 @@ class ActivityTest: WordSpec ({
                     projectname = testProjectname,
                     projectid = testProjectid,
                     activityname = testActivityname,
-                    activityid = "")
+                    activityid = ""
+                )
             }
         }
     }

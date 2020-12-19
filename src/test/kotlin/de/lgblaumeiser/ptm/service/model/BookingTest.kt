@@ -20,7 +20,7 @@ val testBookingUser = "userid1"
 
 val testComment = "My test comment"
 
-class BookingTest: WordSpec ({
+class BookingTest : WordSpec({
 
     "Booking validation" should {
         "should be fine with minimal fields" {
