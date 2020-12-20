@@ -44,14 +44,18 @@ class UserService(
         return newPassword
     }
 
-    fun getUser(username: String, password: String) =
-        if (authenticateUser(username, password))
-            retrieveExistingUserRecord(username).copy(password = "xxx", answer = "xxx")
-        else
-            throw IllegalAccessException("User not authenticated")
+    fun getUser(username: String, password: String): User {
+        authenticateOrThrow(username, password)
+        return retrieveExistingUserRecord(username).copy(password = "xxx", answer = "xxx")
+    }
 
     fun authenticateUser(username: String, password: String) =
         BCrypt.verifyer().verify(password.toCharArray(), retrieveExistingUserRecord(username).password).verified
+
+    private fun authenticateOrThrow(username: String, password: String) {
+        if (!authenticateUser(username, password))
+            throw IllegalAccessException("User not authenticated")
+    }
 
     fun changeUser(
         username: String,
@@ -61,28 +65,25 @@ class UserService(
         question: String? = null,
         answer: String? = null
     ) = retrieveExistingUserRecord(username).let {
-        if (authenticateUser(username, password)) {
-            store.update(
-                username,
-                User(
-                    id = it.id,
-                    username = it.username,
-                    password = newPassword?.let { encrypt(newPassword) } ?: it.password,
-                    email = email ?: it.email,
-                    question = question ?: it.question,
-                    answer = answer?.let { encrypt(answer) } ?: it.answer
-                )
+        authenticateOrThrow(username, password)
+        store.update(
+            username,
+            User(
+                id = it.id,
+                username = it.username,
+                password = newPassword?.let { encrypt(newPassword) } ?: it.password,
+                email = email ?: it.email,
+                question = question ?: it.question,
+                answer = answer?.let { encrypt(answer) } ?: it.answer
             )
-        } else throw IllegalAccessException("User not authenticated")
+        )
     }
 
     fun deleteUser(username: String, password: String) {
-        if (authenticateUser(username, password)) {
-            activities.getActivities(username).forEach { activities.deleteActivity(username, it.id) }
-            bookings.getBookings(username).forEach { bookings.deleteBooking(username, it.id) }
-            retrieveExistingUserRecord(username).let { store.delete(username, it.id) }
-        } else
-            throw IllegalAccessException("User not authenticated")
+        authenticateOrThrow(username, password)
+        activities.getActivities(username).forEach { activities.deleteActivity(username, it.id) }
+        bookings.getBookings(username).forEach { bookings.deleteBooking(username, it.id) }
+        retrieveExistingUserRecord(username).let { store.delete(username, it.id) }
     }
 
     private fun retrieveUserRecord(user: String) =

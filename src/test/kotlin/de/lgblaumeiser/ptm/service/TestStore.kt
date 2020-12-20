@@ -71,7 +71,7 @@ private fun <T> username(obj: T): String {
 private fun <T> hasProperty(obj: T, name: String, values: Collection<Any>): Boolean {
     when (obj) {
         is User -> return userHasProperty(obj, name, values)
-        is Activity -> return activityHasProperty(obj, name, values)
+        is Activity -> return false
         is Booking -> return bookingHasProperty(obj, name, values)
     }
     return false
@@ -84,9 +84,11 @@ private fun userHasProperty(user: User, name: String, values: Collection<Any>): 
     return false
 }
 
-private fun activityHasProperty(activity: Activity, name: String, values: Collection<Any>) = false
-
-private fun bookingHasProperty(booking: Booking, name: String, values: Collection<Any>) = false
+private fun bookingHasProperty(booking: Booking, name: String, values: Collection<Any>) =
+    when (name) {
+        "bookingday" -> values.contains(booking.bookingday)
+        else -> false
+    }
 
 class UserTestStore: TestStore<User>() {
     override val copyFun = User::copy
