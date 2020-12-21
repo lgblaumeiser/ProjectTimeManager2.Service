@@ -39,7 +39,7 @@ abstract class TestStore<T> : Store<T> {
         return objWithId
     }
 
-    private fun nextId() = (dataobjects.map { id(it) }.maxOrNull<T>() ?: 0L) + 1L
+    private fun nextId() = (dataobjects.maxOfOrNull { id(it) } ?: 0L) + 1L
 
     override fun update(user: String, data: T) {
         require(username(data).equals(user, true))
