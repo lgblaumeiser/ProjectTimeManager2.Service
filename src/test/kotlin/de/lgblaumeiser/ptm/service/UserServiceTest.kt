@@ -1,34 +1,30 @@
 package de.lgblaumeiser.ptm.service
 
-import de.lgblaumeiser.ptm.service.model.Activity
-import de.lgblaumeiser.ptm.service.model.Booking
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.WordSpec
 import io.kotest.matchers.should
-import java.time.LocalDate
-import java.time.LocalTime
-
-val testUsername1 = "user1"
-val testUsername2 = "user2"
-
-val testPassword1 = "MySecret"
-val testPassword2 = "MyOtherSecret"
-
-val testEmail1 = "me@somewhere.org"
-val testEmail2 = "me@somewhere_else.org"
-
-val testQuestion1 = "Hugo"
-val testQuestion2 = "Sylt"
-
-val testAnswer1 = "Aperol Spritz"
-val testAnswer2 = "Rügen"
-
-val activityService = ActivityService(ActivityTestStore())
-val bookingService = BookingService(BookingTestStore())
-
-val someString = "Egal"
 
 class UserServiceTest : WordSpec({
+
+    val testUsername1 = "user1"
+    val testUsername2 = "user2"
+
+    val testPassword1 = "MySecret"
+    val testPassword2 = "MyOtherSecret"
+
+    val testEmail1 = "me@somewhere.org"
+    val testEmail2 = "me@somewhere_else.org"
+
+    val testQuestion1 = "Hugo"
+    val testQuestion2 = "Sylt"
+
+    val testAnswer1 = "Aperol Spritz"
+    val testAnswer2 = "Rügen"
+
+    val activityService = ActivityService(ActivityTestStore())
+    val bookingService = BookingService(BookingTestStore())
+
+    val someString = "Egal"
 
     fun initializeService() = UserService(UserTestStore(), activityService, bookingService)
 
@@ -166,8 +162,13 @@ class UserServiceTest : WordSpec({
         "delete user deletes all activities and bookings before user is deleted" {
             val service = initializeService()
             service.addUser(testUsername1, testPassword1, testEmail1, testQuestion1, testAnswer1)
-            val activity = activityService.addActivity (testUsername1, someString, someString, someString, someString)
-            bookingService.addBooking( user = testUsername1, bookingday ="2020-12-20", starttime = "10:45", activity = activity.id )
+            val activity = activityService.addActivity(testUsername1, someString, someString, someString, someString)
+            bookingService.addBooking(
+                user = testUsername1,
+                bookingday = "2020-12-20",
+                starttime = "10:45",
+                activity = activity.id
+            )
             should { service.authenticateUser(testUsername1, testPassword1) }
             service.deleteUser(testUsername1, testPassword1)
             should {

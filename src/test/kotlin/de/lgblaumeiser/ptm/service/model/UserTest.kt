@@ -6,19 +6,19 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.WordSpec
 import io.kotest.matchers.should
 
-val testUsername = "username"
-
-val testPassword = "Secret"
-
-val testEmail = "user@domain.org"
-
-val testWrongEmail = "user<at>domain.org"
-
-val testQuestion = "Wer ist der Bürgermeister von Wesel?"
-
-val testAnswer = "...Esel!"
-
 class UserTest : WordSpec({
+
+    val testUsername = "username"
+
+    val testPassword = "Secret"
+
+    val testEmail = "user@domain.org"
+
+    val testWrongEmail = "user<at>domain.org"
+
+    val testQuestion = "Wer ist der Bürgermeister von Wesel?"
+
+    val testAnswer = "...Esel!"
 
     "User validation" should {
         "should be fine with minimal fields" {
@@ -30,7 +30,7 @@ class UserTest : WordSpec({
                 answer = testAnswer
             )
             should {
-                user.id == -1L;
+                user.id == -1L
                 user.username.equals(testUsername)
                 user.password.equals(testPassword)
                 user.email.equals(testEmail)
@@ -51,7 +51,7 @@ class UserTest : WordSpec({
             )
             val adminUser = user.copy(admin = true)
             should {
-                adminUser.id == 1L;
+                adminUser.id == 1L
                 adminUser.username.equals(testUsername)
                 adminUser.password.equals(testPassword)
                 adminUser.email.equals(testEmail)

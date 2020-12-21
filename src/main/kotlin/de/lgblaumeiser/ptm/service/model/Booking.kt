@@ -5,7 +5,7 @@ package de.lgblaumeiser.ptm.service.model
 import java.time.LocalDate
 import java.time.LocalTime
 
-data class Booking (
+data class Booking(
     val id: Long = -1,
     val bookingday: LocalDate,
     val starttime: LocalTime,

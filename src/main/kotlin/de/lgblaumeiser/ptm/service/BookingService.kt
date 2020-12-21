@@ -19,6 +19,7 @@ class BookingService(val store: Store<Booking>) {
     private fun computeDays(startday: String, endday: String?): List<LocalDate> {
         val parsedstartday = LocalDate.parse(startday)
         val parsedendday = endday?.let { LocalDate.parse(endday) } ?: parsedstartday.plusDays(1L)
+        require(parsedstartday.isBefore(parsedendday))
         val listofdays = mutableListOf<LocalDate>()
         var currentday = parsedstartday
         do {
@@ -39,7 +40,7 @@ class BookingService(val store: Store<Booking>) {
         activity: Long,
         comment: String = ""
     ): Booking {
-        retrieveOpenBooking(user, bookingday)?.let { changeBooking(id = it.id, user = it.user, endtime = starttime) }
+        retrieveOpenBooking(user, bookingday)?.let { changeBooking(id = it.id, user = user, endtime = starttime) }
         return store.create(
             user,
             Booking(
@@ -71,9 +72,9 @@ class BookingService(val store: Store<Booking>) {
             Booking(
                 id = it.id,
                 user = it.user,
-                bookingday = LocalDate.parse(bookingday) ?: it.bookingday,
-                starttime = LocalTime.parse(starttime) ?: it.starttime,
-                endtime = LocalTime.parse(endtime) ?: it.endtime,
+                bookingday = bookingday?.let { LocalDate.parse(bookingday) } ?: it.bookingday,
+                starttime = starttime?.let { LocalTime.parse(starttime) } ?: it.starttime,
+                endtime = endtime?.let { LocalTime.parse(endtime) } ?: it.endtime,
                 activity = activity ?: it.activity,
                 comment = comment ?: it.comment
             )

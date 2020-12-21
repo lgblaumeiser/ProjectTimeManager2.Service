@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 package de.lgblaumeiser.ptm.service.model
 
-data class User (
+data class User(
     val id: Long = -1,
     val username: String,
     val password: String,

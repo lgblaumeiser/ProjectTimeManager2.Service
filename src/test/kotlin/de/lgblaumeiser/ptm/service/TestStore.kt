@@ -19,25 +19,27 @@ abstract class TestStore<T> : Store<T> {
 
     override fun retrieveById(user: String, id: Long) = dataobjects
         .filter { id(it) == id }.firstOrNull { username(it).equals(user, true) }
-        ?: throw IllegalStateException("Activity with id $id not found")
+        ?: throw IllegalStateException("Object with id $id not found")
 
     override fun retrieveByProperty(user: String, name: String, values: Collection<Any>) =
-        dataobjects.filter { hasProperty(it, name, values) }
+        dataobjects.filter { username(it).equals(user, true) && hasProperty(it, name, values) }
 
     override fun create(user: String, data: T): T {
         require(username(data).equals(user, true))
         val id = nextId()
         val toCopy = copyFun.instanceParameter!!
         val idParam = copyFun.findParameterByName("id")!!
-        val objWithId = copyFun.callBy( mapOf (
-            toCopy to data,
-            idParam to id
-        ))
+        val objWithId = copyFun.callBy(
+            mapOf(
+                toCopy to data,
+                idParam to id
+            )
+        )
         dataobjects.add(objWithId)
         return objWithId
     }
 
-    private fun nextId() = (dataobjects.map { id(it) }.max() ?: 0L) + 1L
+    private fun nextId() = (dataobjects.map { id(it) }.maxOrNull<T>() ?: 0L) + 1L
 
     override fun update(user: String, data: T) {
         require(username(data).equals(user, true))
@@ -90,14 +92,14 @@ private fun bookingHasProperty(booking: Booking, name: String, values: Collectio
         else -> false
     }
 
-class UserTestStore: TestStore<User>() {
+class UserTestStore : TestStore<User>() {
     override val copyFun = User::copy
 }
 
-class ActivityTestStore: TestStore<Activity>() {
+class ActivityTestStore : TestStore<Activity>() {
     override val copyFun = Activity::copy
 }
 
-class BookingTestStore: TestStore<Booking>() {
+class BookingTestStore : TestStore<Booking>() {
     override val copyFun = Booking::copy
 }

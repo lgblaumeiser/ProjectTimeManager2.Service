@@ -6,17 +6,17 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.WordSpec
 import io.kotest.matchers.should
 
-val testActivityUser = "userid1"
-
-val testProjectname = "project1"
-
-val testProjectid = "0815"
-
-val testActivityname = "activity1"
-
-val testActivityid = "1"
-
 class ActivityTest : WordSpec({
+
+    val testActivityUser = "userid1"
+
+    val testProjectname = "project1"
+
+    val testProjectid = "0815"
+
+    val testActivityname = "activity1"
+
+    val testActivityid = "1"
 
     "Activity validation" should {
         "should be fine with proper fields" {
@@ -28,7 +28,7 @@ class ActivityTest : WordSpec({
                 activityid = testActivityid
             )
             should {
-                activity.id == -1L;
+                activity.id == -1L
                 activity.user.equals(testActivityUser)
                 activity.projectname.equals(testProjectname)
                 activity.projectid.equals(testProjectid)
@@ -49,7 +49,7 @@ class ActivityTest : WordSpec({
                 hidden = true
             )
             should {
-                activity.id == 1L;
+                activity.id == 1L
                 activity.user.equals(testActivityUser)
                 activity.projectname.equals(testProjectname)
                 activity.projectid.equals(testProjectid)

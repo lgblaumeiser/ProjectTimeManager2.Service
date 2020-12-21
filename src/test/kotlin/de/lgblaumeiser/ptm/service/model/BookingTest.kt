@@ -8,19 +8,19 @@ import io.kotest.matchers.should
 import java.time.LocalDate
 import java.time.LocalTime
 
-val testBookingDay = LocalDate.now()
-
-val testStarttime = LocalTime.now().minusHours(1L)
-
-val testEndtime = LocalTime.now()
-
-val testActivity = 1L
-
-val testBookingUser = "userid1"
-
-val testComment = "My test comment"
-
 class BookingTest : WordSpec({
+
+    val testBookingDay = LocalDate.now()
+
+    val testStarttime = LocalTime.now().minusHours(1L)
+
+    val testEndtime = LocalTime.now()
+
+    val testActivity = 1L
+
+    val testBookingUser = "userid1"
+
+    val testComment = "My test comment"
 
     "Booking validation" should {
         "should be fine with minimal fields" {

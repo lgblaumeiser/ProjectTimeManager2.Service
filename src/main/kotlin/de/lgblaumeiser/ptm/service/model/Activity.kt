@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 package de.lgblaumeiser.ptm.service.model
 
-data class Activity (
+data class Activity(
     val id: Long = -1,
     val user: String,
     val projectname: String,
