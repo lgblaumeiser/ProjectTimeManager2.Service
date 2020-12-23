@@ -3,9 +3,7 @@
 package de.lgblaumeiser.ptm.service
 
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.spec.Spec
 import io.kotest.core.spec.style.WordSpec
-import io.kotest.core.test.TestCase
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainExactly

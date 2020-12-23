@@ -1,7 +1,8 @@
+// SPDX-FileCopyrightText: 2020 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
+// SPDX-License-Identifier: MIT
 package de.lgblaumeiser.ptm.service
 
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.spec.Spec
 import io.kotest.core.spec.style.WordSpec
 import io.kotest.matchers.should
 
