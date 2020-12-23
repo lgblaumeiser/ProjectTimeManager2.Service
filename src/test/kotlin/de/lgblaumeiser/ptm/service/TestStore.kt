@@ -50,6 +50,10 @@ abstract class TestStore<T> : Store<T> {
     override fun delete(user: String, id: Long) {
         dataobjects.remove(retrieveById(user, id))
     }
+
+    fun clear() {
+        dataobjects.clear()
+    }
 }
 
 private fun <T> id(obj: T): Long {

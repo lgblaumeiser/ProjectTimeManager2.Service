@@ -3,7 +3,9 @@
 package de.lgblaumeiser.ptm.service
 
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.spec.Spec
 import io.kotest.core.spec.style.WordSpec
+import io.kotest.core.test.TestCase
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainExactly
@@ -12,109 +14,58 @@ import io.kotest.matchers.shouldBe
 
 class ActivityServiceTest : WordSpec({
 
-    val testActivityUser1 = "userid1"
-    val testActivityUser2 = "userid2"
-
-    val testProjectname1 = "project1"
-    val testProjectname2 = "project2"
-
-    val testProjectid1 = "0815"
-    val testProjectid2 = "4711"
-
-    val testActivityname1 = "activity1"
-    val testActivityname2 = "activity2"
-
-    val testActivityid1 = "1"
-    val testActivityid2 = "2"
-
-    fun initializeService() = ActivityService(ActivityTestStore())
+    beforeTest {
+        initializeActivityService()
+    }
 
     "getActivities" should {
         "return an empty collection when nothing is stored" {
-            val service = initializeService()
-            should { service.getActivities(testActivityUser1).shouldBeEmpty() }
+            should { activityService.getActivities(testActivityUser1).shouldBeEmpty() }
         }
     }
 
     "getActivityById" should {
         "return an exception if asked for a id that do not exist" {
-            val service = initializeService()
-            shouldThrow<IllegalStateException> { service.getActivityById(testActivityUser1, 1L) }
+            shouldThrow<IllegalStateException> { activityService.getActivityById(testActivityUser1, 1L) }
         }
     }
 
     "addActivity" should {
         "added activity can be retrieved again" {
-            val service = initializeService()
-            val activity =
-                service.addActivity(
-                    testActivityUser1,
-                    testProjectname1,
-                    testProjectid1,
-                    testActivityname1,
-                    testActivityid1
-                )
-            should { service.getActivities(testActivityUser1).shouldContainExactly(activity) }
+            val activity = addStandardActivity1()
+            should {
+                activity.equals(testActivity1)
+                activityService.getActivities(testActivityUser1).shouldContainExactly(testActivity1.copy(id = 1L))
+            }
         }
 
         "added activity not retrieved for different user" {
-            val service = initializeService()
-            service.addActivity(testActivityUser1, testProjectname1, testProjectid1, testActivityname1, testActivityid1)
-            should { service.getActivities(testActivityUser2).shouldBeEmpty() }
+            addStandardActivity1()
+            should { activityService.getActivities(testActivityUser2).shouldBeEmpty() }
         }
 
         "two added activity with different users should be separated" {
-            val service = initializeService()
-            val activity1 =
-                service.addActivity(
-                    testActivityUser1,
-                    testProjectname1,
-                    testProjectid1,
-                    testActivityname1,
-                    testActivityid1
-                )
-            val activity2 =
-                service.addActivity(
-                    testActivityUser2,
-                    testProjectname2,
-                    testProjectid2,
-                    testActivityname2,
-                    testActivityid2
-                )
-            should { service.getActivities(testActivityUser1).shouldContainExactly(activity1) }
-            should { service.getActivities(testActivityUser2).shouldContainExactly(activity2) }
+            addStandardActivity1()
+            addStandardActivity2()
+            should {
+                activityService.getActivities(testActivityUser1).shouldContainExactly(testActivity1.copy(id = 1L))
+                activityService.getActivities(testActivityUser2).shouldContainExactly(testActivity2.copy(id = 2L))
+            }
         }
 
         "added activity can be retrieved by id" {
-            val service = initializeService()
-            val activity =
-                service.addActivity(
-                    testActivityUser1,
-                    testProjectname1,
-                    testProjectid1,
-                    testActivityname1,
-                    testActivityid1
-                )
-            should { service.getActivityById(testActivityUser1, activity.id).equals(activity) }
+            addStandardActivity1()
+            should { activityService.getActivityById(testActivityUser1, 1L).equals(testActivity1.copy(id = 1L)) }
         }
 
         "added activity creates an exception if called with wrong user" {
-            val service = initializeService()
-            val activity =
-                service.addActivity(
-                    testActivityUser1,
-                    testProjectname1,
-                    testProjectid1,
-                    testActivityname1,
-                    testActivityid1
-                )
-            shouldThrow<IllegalStateException> { service.getActivityById(testActivityUser2, activity.id) }
+            addStandardActivity1()
+            shouldThrow<IllegalStateException> { activityService.getActivityById(testActivityUser2, 1L) }
         }
 
         "two added activities for same user can be retrieved in sorted order" {
-            val service = initializeService()
             val activity1 =
-                service.addActivity(
+                activityService.addActivity(
                     testActivityUser1,
                     testProjectname1,
                     testProjectid1,
@@ -122,7 +73,7 @@ class ActivityServiceTest : WordSpec({
                     testActivityid1
                 )
             val activity2 =
-                service.addActivity(
+                activityService.addActivity(
                     testActivityUser1,
                     testProjectname2,
                     testProjectid2,
@@ -130,7 +81,7 @@ class ActivityServiceTest : WordSpec({
                     testActivityid2
                 )
             val activity3 =
-                service.addActivity(
+                activityService.addActivity(
                     testActivityUser1,
                     testProjectname1,
                     testProjectid1,
@@ -138,10 +89,7 @@ class ActivityServiceTest : WordSpec({
                     testActivityid2
                 )
             should {
-                service.getActivityById(testActivityUser1, activity1.id).shouldBe(activity1)
-                service.getActivityById(testActivityUser1, activity2.id).shouldBe(activity2)
-                service.getActivityById(testActivityUser1, activity3.id).shouldBe(activity3)
-                val activities = service.getActivities(testActivityUser1)
+                val activities = activityService.getActivities(testActivityUser1)
                 activities.size.shouldBe(3)
                 activities.get(0).shouldBe(activity1)
                 activities.get(1).shouldBe(activity3)
@@ -152,22 +100,14 @@ class ActivityServiceTest : WordSpec({
 
     "change activity" should {
         "added activity is changeable" {
-            val service = initializeService()
-            val activity =
-                service.addActivity(
-                    testActivityUser1,
-                    testProjectname1,
-                    testProjectid1,
-                    testActivityname1,
-                    testActivityid1
-                )
-            service.changeActivity(
+            val activity = addStandardActivity1()
+            activityService.changeActivity(
                 user = testActivityUser1,
                 id = activity.id,
                 activityid = testActivityid2,
                 activityname = testActivityname2
             )
-            val retrieved = service.getActivityById(testActivityUser1, activity.id)
+            val retrieved = activityService.getActivityById(testActivityUser1, activity.id)
             should {
                 !activity.equals(retrieved)
                 activity.id == retrieved.id
@@ -180,17 +120,9 @@ class ActivityServiceTest : WordSpec({
         }
 
         "added activity is not changeable by different user" {
-            val service = initializeService()
-            val activity =
-                service.addActivity(
-                    testActivityUser1,
-                    testProjectname1,
-                    testProjectid1,
-                    testActivityname1,
-                    testActivityid1
-                )
+            val activity = addStandardActivity1()
             shouldThrow<IllegalStateException> {
-                service.changeActivity(
+                activityService.changeActivity(
                     user = testActivityUser2,
                     id = activity.id,
                     activityid = testActivityid2,
@@ -200,69 +132,43 @@ class ActivityServiceTest : WordSpec({
         }
 
         "activities can be hidden" {
-            val service = initializeService()
-            val activity1 =
-                service.addActivity(
-                    testActivityUser1,
-                    testProjectname1,
-                    testProjectid1,
-                    testActivityname1,
-                    testActivityid1
-                )
+            val activity1 = addStandardActivity1()
             val activity2 =
-                service.addActivity(
+                activityService.addActivity(
                     testActivityUser1,
                     testProjectname2,
                     testProjectid2,
                     testActivityname2,
                     testActivityid2
                 )
-            service.changeActivity(
+            activityService.changeActivity(
                 user = testActivityUser1,
                 id = activity1.id,
                 hidden = true
             )
-            val retrieved1 = service.getActivityById(testActivityUser1, activity1.id)
-            val retrieved2 = service.getActivityById(testActivityUser1, activity2.id)
+            val retrieved1 = activityService.getActivityById(testActivityUser1, activity1.id)
+            val retrieved2 = activityService.getActivityById(testActivityUser1, activity2.id)
             should {
                 !activity1.hidden
                 !activity2.hidden
                 retrieved1.hidden
                 !retrieved2.hidden
-                !activity1.equals(retrieved1)
-                activity2.equals(retrieved2)
-                service.getActivities(testActivityUser1).shouldContainExactly(retrieved2)
-                service.getActivities(testActivityUser1, true).shouldContain(retrieved1)
+                activityService.getActivities(testActivityUser1).shouldContainExactly(retrieved2)
+                activityService.getActivities(testActivityUser1, true).shouldContain(retrieved1)
             }
         }
     }
 
     "delete activity" should {
         "an added activity can be deleted" {
-            val service = initializeService()
-            val activity =
-                service.addActivity(
-                    testActivityUser1,
-                    testProjectname1,
-                    testProjectid1,
-                    testActivityname1,
-                    testActivityid1
-                )
-            service.deleteActivity(testActivityUser1, activity.id)
-            should { service.getActivities(testActivityUser1).shouldBeEmpty() }
+            val activity = addStandardActivity1()
+            activityService.deleteActivity(testActivityUser1, activity.id)
+            should { activityService.getActivities(testActivityUser1).shouldBeEmpty() }
         }
 
         "an added activity cannot be deleted from other user" {
-            val service = initializeService()
-            val activity =
-                service.addActivity(
-                    testActivityUser1,
-                    testProjectname1,
-                    testProjectid1,
-                    testActivityname1,
-                    testActivityid1
-                )
-            shouldThrow<java.lang.IllegalStateException> { service.deleteActivity(testActivityUser2, activity.id) }
+            val activity = addStandardActivity1()
+            shouldThrow<java.lang.IllegalStateException> { activityService.deleteActivity(testActivityUser2, activity.id) }
         }
     }
 })
