@@ -44,12 +44,12 @@ class HourComputer(val bookingService: BookingService) : Analysis<HourAnalysisDa
         var endtime = LocalTime.of(0, 0)
         var worktime: Duration = Duration.ZERO
         for (booking in bookings) {
-            val currentworktime = calculateTimeframe(booking.starttime, booking.endtime!!)
+            val currentworktime = Duration.between(booking.starttime, booking.endtime!!).toMinutes()
             worktime = worktime.plusMinutes(currentworktime)
             if (booking.starttime.isBefore(starttime)) starttime = booking.starttime
             if (booking.endtime.isAfter(endtime)) endtime = booking.endtime
         }
-        val presence = Duration.ofMinutes(calculateTimeframe(starttime, endtime))
+        val presence = Duration.between(starttime, endtime)
         return HourAnalysisData(
             currentDay,
             starttime,
@@ -128,20 +128,6 @@ data class HourAnalysisData(
     fun overtimeString() = durationToString(overtime)
 }
 
-fun dateToString(date: LocalDate?) = date?.let { date.format(DateTimeFormatter.ISO_LOCAL_DATE) } ?: ""
-
-fun timeToString(time: LocalTime?) = time?.let { time.format(DateTimeFormatter.ofPattern("HH:mm")) } ?: ""
-
-fun durationToString(duration: Duration?): String {
-    duration?.let {
-        var minutes = duration.toMinutes()
-        val pre = if (minutes < 0) '-' else ' '
-        minutes = Math.abs(minutes)
-        return String.format("%c%02d:%02d", pre, minutes / 60, minutes % 60);
-    }
-    return ""
-}
-
 fun timeframeWithOverlap(
     starttime1: LocalTime,
     endtime1: LocalTime,
@@ -156,8 +142,3 @@ fun timeframeWithOverlap(
     ) return false
     return true
 }
-
-fun calculateTimeframe(starttime: LocalTime, endtime: LocalTime): Long {
-    return Duration.between(starttime, endtime).toMinutes()
-}
-

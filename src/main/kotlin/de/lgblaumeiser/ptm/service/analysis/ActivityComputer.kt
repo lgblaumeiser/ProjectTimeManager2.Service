@@ -8,7 +8,7 @@ import de.lgblaumeiser.ptm.service.model.Booking
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 
-class ActivityAnalysisComputer(
+class ActivityComputer(
     activityService: ActivityService,
     bookingService: BookingService
 ) : AbstractComputer<ActivityAnalysisData>(activityService, bookingService) {
