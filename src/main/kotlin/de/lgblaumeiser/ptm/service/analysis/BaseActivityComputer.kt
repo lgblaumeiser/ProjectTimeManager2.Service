@@ -112,6 +112,6 @@ data class ActivityAnalysisData(
     val comment: String
 ) {
     fun minutesString() = durationToString(minutes)
-    fun percentageString() = "%03.1f%".format(percentage)
+    fun percentageString() = "$percentage%"
 }
 

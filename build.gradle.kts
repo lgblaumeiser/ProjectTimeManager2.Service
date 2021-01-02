@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.4.21"
+    jacoco
 }
 
 group = "de.lgblaumeiser.ptm"
@@ -23,12 +24,27 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-reflect:1.4.21")
 }
 
+jacoco {
+    toolVersion = "0.8.6"
+    reportsDir = file("$buildDir/customJacocoReportDir")
+}
+
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "11"
     }
 }
 
-tasks.withType<Test> {
+tasks.test {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+    reports {
+        xml.isEnabled = false
+        csv.isEnabled = false
+        html.destination = file("${buildDir}/jacocoHtml")
+    }
 }
