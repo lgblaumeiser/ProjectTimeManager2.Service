@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
+// SPDX-FileCopyrightText: 2020, 2021 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
 // SPDX-License-Identifier: MIT
 package de.lgblaumeiser.ptm.service.analysis
 
@@ -6,8 +6,6 @@ import de.lgblaumeiser.ptm.service.activityService
 import de.lgblaumeiser.ptm.service.bookingService
 import de.lgblaumeiser.ptm.service.initializeActivityService
 import de.lgblaumeiser.ptm.service.initializeBookingService
-import de.lgblaumeiser.ptm.service.model.Activity
-import de.lgblaumeiser.ptm.service.model.Booking
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -128,14 +126,16 @@ fun createTestdatabase(): Unit {
         bookingday = dateToString(testAnalysisDate4),
         starttime = timeToString(testAnalysisTime4),
         endtime = timeToString(testAnalysisTime7),
-        activity = testAnalysisActivityObjectId1
+        activity = testAnalysisActivityObjectId1,
+        comment = testAnalysisComment2
     )
     bookingService.addBooking(
         user = testAnalysisUsername,
         bookingday = dateToString(testAnalysisDate4),
         starttime = timeToString(testAnalysisTime7),
         endtime = timeToString(testAnalysisTime8),
-        activity = testAnalysisActivityObjectId2
+        activity = testAnalysisActivityObjectId2,
+        comment = testAnalysisComment3
     )
     bookingService.addBooking(
         user = testAnalysisUsername,
@@ -151,29 +151,3 @@ fun createTestdatabase(): Unit {
         activity = testAnalysisActivityObjectId1
     )
 }
-
-/*
-fun sumPercentages(analysisResults: Collection<Collection<String>>): Double {
-    var sum = 0.0
-    for (rowIndex in 1 until analysisResults.size) {
-        sum += parseDoubleFromPercentageString(analysisResults, rowIndex)
-    }
-    return sum
-}
-
-private fun parseDoubleFromPercentageString(
-    analysisResults: Collection<Collection<String>>,
-    rowNumber: Int
-): Double {
-    return getPercentageFromRow(analysisResults, rowNumber).replace(",".toRegex(), ".")
-        .replace("%".toRegex(), "").toDouble()
-}
-
-private fun getPercentageFromRow(analysisResults: Collection<Collection<String>>, rowNumber: Int): String {
-    return getIndexFromCollection(getRow(analysisResults, rowNumber), PERCENTAGE_COLUMN)
-}
-
-private fun getRow(analysisResults: Collection<Collection<String>>, rowNumber: Int): Collection<String?>? {
-    return getIndexFromCollection(analysisResults, rowNumber)
-}
-*/
