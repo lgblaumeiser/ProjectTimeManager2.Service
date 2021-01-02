@@ -9,10 +9,6 @@ import de.lgblaumeiser.ptm.service.initializeBookingService
 import java.time.LocalDate
 import java.time.LocalTime
 
-const val DOUBLE_COMPARISON_DELTA = 0.15
-
-val otherMonth = LocalDate.of(2015, 12, 1)
-
 const val testAnalysisUsername = "CoolUser"
 
 const val testAnalysisProjectname1 = "a"
