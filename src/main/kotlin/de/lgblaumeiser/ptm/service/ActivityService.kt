@@ -9,7 +9,7 @@ class ActivityService(val store: Store<Activity>) {
     fun getActivities(user: String, hidden: Boolean = false) = store
         .retrieveAll(user)
         .filter { hidden || !it.hidden }
-        .sortedWith(compareBy<Activity> { it.projectid.toUpperCase() }.thenBy { it.activityid.toUpperCase() })
+        .sortedWith(compareBy<Activity> { it.projectid.uppercase() }.thenBy { it.activityid.uppercase() })
 
     fun getActivityById(user: String, id: Long): Activity = store
         .retrieveById(user, id)

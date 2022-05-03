@@ -94,7 +94,7 @@ class ProjectComputer(
         val comment = listOf(data1.comment, data2.comment).distinct().joinToString(separator = ", ")
 
         return ActivityAnalysisData(
-            projectId = data1.projectId,
+            projectId = key,
             projectName = data1.projectName,
             minutes = minutes,
             comment = comment
