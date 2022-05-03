@@ -12,8 +12,10 @@ class UserServiceTest : WordSpec({
         initializeUserService()
     }
 
-    "get user by name results in exception is user is unknown" should {
-        shouldThrow<IllegalArgumentException> { userService.getUser(testUsername1, testPassword1) }
+    "get user by name" should {
+        "throw exception is user is unknown" {
+            shouldThrow<IllegalArgumentException> { userService.getUser(testUsername1, testPassword1) }
+        }
     }
 
     "add user" should {
