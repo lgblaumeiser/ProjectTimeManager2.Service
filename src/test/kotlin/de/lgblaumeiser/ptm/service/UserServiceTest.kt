@@ -23,11 +23,7 @@ class UserServiceTest : WordSpec({
             addTestUser1()
             val stored = userService.getUser(testUsername1, testPassword1)
             should {
-                stored.username.equals(testUsername1)
-                stored.password.equals("xxx")
-                stored.email.equals(testEmail1)
-                stored.question.equals(testQuestion1)
-                stored.answer.equals("xxx")
+                stored.username == testUsername1
                 stored.admin
                 userService.authenticateUser(testUsername1, testPassword1)
             }
@@ -66,71 +62,14 @@ class UserServiceTest : WordSpec({
                 userService.authenticateUser(testUsername1, testPassword1)
                 !userService.authenticateUser(testUsername1, testPassword2)
             }
-            userService.changeUser(
+            userService.changePassword(
                 username = testUsername1,
-                password = testPassword1,
-                newPassword = testPassword2,
-                email = testEmail2,
-                question = testQuestion2,
-                answer = testAnswer2
+                newPassword = testPassword2
             )
             should {
                 userService.authenticateUser(testUsername1, testPassword2)
                 !userService.authenticateUser(testUsername1, testPassword1)
-                val user = userService.getUser(testUsername1, testPassword2)
-                user.email.equals(testEmail2)
-                user.question.equals(testQuestion2)
             }
-        }
-
-        "It is possible to only change the email" {
-            addTestUser1()
-            userService.changeUser(
-                username = testUsername1,
-                password = testPassword1,
-                email = testEmail2
-            )
-            should {
-                userService.authenticateUser(testUsername1, testPassword1)
-                !userService.authenticateUser(testUsername1, testPassword2)
-                val user = userService.getUser(testUsername1, testPassword1)
-                user.email.equals(testEmail2)
-                user.question.equals(testQuestion1)
-            }
-        }
-
-        "Not possible to change user with wrong password" {
-            addTestUser1()
-            shouldThrow<IllegalAccessException> {
-                userService.changeUser(
-                    username = testUsername1,
-                    password = testPassword2,
-                    email = testEmail2
-                )
-            }
-        }
-    }
-
-    "reset password" should {
-        "reset password works with right answer even after change" {
-            addTestUser1()
-            should { userService.authenticateUser(testUsername1, testPassword2) }
-            val newPassword = userService.resetPassword(testUsername1, testAnswer1)
-            should { userService.authenticateUser(testUsername1, newPassword) }
-            userService.changeUser(
-                username = testUsername1,
-                password = newPassword,
-                question = testQuestion2,
-                answer = testAnswer2
-            )
-            should { userService.authenticateUser(testUsername1, newPassword) }
-            val secondPassword = userService.resetPassword(testUsername1, testAnswer2)
-            should { userService.authenticateUser(testUsername1, secondPassword) }
-        }
-
-        "reset requires right answer for change" {
-            addTestUser1()
-            shouldThrow<IllegalAccessException> { userService.resetPassword(testUsername1, testAnswer2) }
         }
     }
 
