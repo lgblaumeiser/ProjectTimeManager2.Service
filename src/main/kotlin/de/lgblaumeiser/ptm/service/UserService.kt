@@ -5,7 +5,6 @@ package de.lgblaumeiser.ptm.service
 import at.favre.lib.crypto.bcrypt.BCrypt
 import de.lgblaumeiser.ptm.service.model.User
 import de.lgblaumeiser.ptm.service.store.Store
-import java.util.*
 
 open class UserService(
     private val store: Store<User>,
@@ -44,15 +43,17 @@ open class UserService(
     }
 
     fun deleteUser(username: String) {
-        activities.getActivities(username).forEach { activities.deleteActivity(username, it.id) }
-        bookings.getBookings(username).forEach { bookings.deleteBooking(username, it.id) }
-        retrieveExistingUserRecord(username).let { store.delete(it.id) }
+        retrieveUserRecord(username)?.let { user ->
+            activities.getActivities(username).forEach { activities.deleteActivity(username, it.id) }
+            bookings.getBookings(username).forEach { bookings.deleteBooking(username, it.id) }
+            store.delete(user.id)
+        }
     }
 
-    internal fun retrieveUserRecord(user: String) = store.retrieveAll(user).firstOrNull()
+    private fun retrieveUserRecord(user: String) = store.retrieveAll(user).firstOrNull()
 
     internal fun retrieveExistingUserRecord(user: String) =
-        retrieveUserRecord(user) ?: throw IllegalArgumentException("User $user not found in database")
+        retrieveUserRecord(user) ?: throw IllegalArgumentException("User not found in database")
 
     private fun encrypt(password: String) =
         BCrypt.withDefaults().hashToString(12, password.toCharArray()) ?: ""

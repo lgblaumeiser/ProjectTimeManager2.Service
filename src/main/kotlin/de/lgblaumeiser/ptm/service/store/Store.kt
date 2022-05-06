@@ -8,12 +8,12 @@ import java.time.LocalDate
 interface Store<T> {
     fun retrieveAll(user: String): List<T>
 
-    // Throws IllegalArgumentException, if element is not in storage or not accessible for user
-    fun retrieveById(user: String, id: Long): T
+    // Throws IllegalArgumentException, if element is not in storage
+    fun retrieveById(id: Long): T
 
     fun create(data: T): T
 
-    fun update(data: T)
+    fun update(data: T): T
 
     fun delete(id: Long)
 }

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 package de.lgblaumeiser.ptm.service.store
 
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.WordSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
@@ -47,18 +46,17 @@ abstract class StoreContractComplianceKit<T> : WordSpec() {
                 should {
                     compareDataToStored(created, tostore)
                     store().retrieveAll(userid1).shouldContainExactly(created)
-                    store().retrieveById(userid1, id(created))
+                    store().retrieveById(id(created))
                 }
             }
 
             "create object created user specific object that cannot be retrieved for different user" {
                 val tostore = testObject1()
                 should { username(tostore) == userid1 }
-                val created = store().create(tostore)
+                store().create(tostore)
                 should {
                     store().retrieveAll(userid2).shouldBeEmpty()
                 }
-                shouldThrow<IllegalArgumentException> { store().retrieveById(userid2, id(created)) }
             }
 
             "create object with two different users return the objects associated to the right user" {
@@ -71,10 +69,10 @@ abstract class StoreContractComplianceKit<T> : WordSpec() {
                 should {
                     compareDataToStored(created1, tostore1)
                     store().retrieveAll(userid1).shouldContainExactly(created1)
-                    store().retrieveById(userid1, id(created1))
+                    store().retrieveById(id(created1))
                     compareDataToStored(created2, tostore2)
                     store().retrieveAll(userid2).shouldContainExactly(created2)
-                    store().retrieveById(userid2, id(created2))
+                    store().retrieveById(id(created2))
                 }
             }
         }
@@ -99,7 +97,7 @@ abstract class StoreContractComplianceKit<T> : WordSpec() {
                 should { username(toupdate) == userid1 }
                 should { id(toupdate) == id(created) }
                 store().update(toupdate)
-                should { store().retrieveById(userid1, id(created)).shouldBe(toupdate) }
+                should { store().retrieveById(id(created)).shouldBe(toupdate) }
             }
         }
     }

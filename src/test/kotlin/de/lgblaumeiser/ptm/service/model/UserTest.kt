@@ -20,8 +20,8 @@ class UserTest : WordSpec({
             )
             should {
                 user.id == -1L
-                user.username.equals(testUsername)
-                user.password.equals(testPassword)
+                user.username == testUsername
+                user.password == testPassword
                 !user.admin
             }
         }
@@ -35,8 +35,8 @@ class UserTest : WordSpec({
             val adminUser = user.copy(admin = true)
             should {
                 adminUser.id == 1L
-                adminUser.username.equals(testUsername)
-                adminUser.password.equals(testPassword)
+                adminUser.username == testUsername
+                adminUser.password == testPassword
                 adminUser.admin
             }
         }

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020, 2021 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
+// SPDX-FileCopyrightText: 2020, 2021, 2022 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
 // SPDX-License-Identifier: MIT
 package de.lgblaumeiser.ptm.service.analysis
 
@@ -14,7 +14,7 @@ const val WORKTIME_COMMENT = "> 10 hours worktime!"
 const val INCOMPLETE_COMMENT = "Day has unfinished bookings!"
 const val OVERLAPPING_COMMENT = "Day has overlapping bookings!"
 
-class HourComputer(val bookingService: BookingService) : Analysis<HourAnalysisData> {
+class HourComputer(private val bookingService: BookingService) : Analysis<HourAnalysisData> {
     override fun analyze(username: String, firstDay: String, firstDayAfter: String): List<HourAnalysisData> {
         val bookingsMap = bookingService.getBookings(username, firstDay, firstDayAfter).groupBy { it.bookingday }
 
@@ -26,7 +26,7 @@ class HourComputer(val bookingService: BookingService) : Analysis<HourAnalysisDa
 
         while (currentday.isBefore(endcondition)) {
             val bookings = bookingsMap[currentday]
-            if (bookings != null && !bookings.isEmpty()) {
+            if (bookings != null && bookings.isNotEmpty()) {
                 val resultEntry = calculateResultsForDay(currentday, bookings, overtime, totaltime)
                 resultList.add(resultEntry)
                 resultEntry.overtime?.let { overtime = resultEntry.overtime }
@@ -106,7 +106,7 @@ class HourComputer(val bookingService: BookingService) : Analysis<HourAnalysisDa
         return false
     }
 
-    private fun hasOpenBookings(bookings: List<Booking>) = bookings.filter { it.endtime == null }.isNotEmpty()
+    private fun hasOpenBookings(bookings: List<Booking>) = bookings.any { it.endtime == null }
 }
 
 data class HourAnalysisData(

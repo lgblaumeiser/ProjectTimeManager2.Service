@@ -32,11 +32,11 @@ class BookingTest : WordSpec({
             )
             should {
                 booking.id == -1L
-                booking.bookingday.equals(testBookingDay)
-                booking.starttime.equals(testStarttime)
+                booking.bookingday == testBookingDay
+                booking.starttime == testStarttime
                 booking.endtime == null
                 booking.activity == testActivity
-                booking.user.equals(testBookingUser)
+                booking.user == testBookingUser
                 booking.comment.isBlank()
             }
         }
@@ -53,12 +53,12 @@ class BookingTest : WordSpec({
             )
             should {
                 booking.id == 1L
-                booking.bookingday.equals(testBookingDay)
-                booking.starttime.equals(testStarttime)
-                booking.endtime?.equals(testEndtime)
+                booking.bookingday == testBookingDay
+                booking.starttime == testStarttime
+                booking.endtime?.let {it == testEndtime }
                 booking.activity == testActivity
-                booking.user.equals(testBookingUser)
-                booking.comment.equals(testComment)
+                booking.user == testBookingUser
+                booking.comment == testComment
             }
         }
 

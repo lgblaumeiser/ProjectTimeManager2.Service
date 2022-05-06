@@ -29,11 +29,11 @@ class ActivityTest : WordSpec({
             )
             should {
                 activity.id == -1L
-                activity.user.equals(testActivityUser)
-                activity.projectname.equals(testProjectname)
-                activity.projectid.equals(testProjectid)
-                activity.activityname.equals(testActivityname)
-                activity.activityid.equals(testActivityid)
+                activity.user == testActivityUser
+                activity.projectname == testProjectname
+                activity.projectid == testProjectid
+                activity.activityname == testActivityname
+                activity.activityid == testActivityid
                 !activity.hidden
             }
         }
@@ -50,11 +50,11 @@ class ActivityTest : WordSpec({
             )
             should {
                 activity.id == 1L
-                activity.user.equals(testActivityUser)
-                activity.projectname.equals(testProjectname)
-                activity.projectid.equals(testProjectid)
-                activity.activityname.equals(testActivityname)
-                activity.activityid.equals(testActivityid)
+                activity.user == testActivityUser
+                activity.projectname == testProjectname
+                activity.projectid == testProjectid
+                activity.activityname == testActivityname
+                activity.activityid ==testActivityid
                 activity.hidden
             }
         }

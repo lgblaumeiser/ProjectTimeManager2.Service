@@ -19,8 +19,7 @@ abstract class TestStore<T> : Store<T> {
 
     override fun retrieveAll(user: String) = dataobjects.toList().filter { username(it).equals(user, true) }
 
-    override fun retrieveById(user: String, id: Long) = retrieveByIdOnly(id)?.takeIf { username(it).equals(user, true) }
-        ?: throw IllegalArgumentException("Object with id $id not found")
+    override fun retrieveById(id: Long) = dataobjects.firstOrNull { id(it) == id } ?: throw IllegalArgumentException("Object with id $id not found")
 
     override fun create(data: T): T {
         val id = nextId()
@@ -38,20 +37,19 @@ abstract class TestStore<T> : Store<T> {
 
     private fun nextId() = (dataobjects.maxOfOrNull { id(it) } ?: 0L) + 1L
 
-    override fun update(data: T) {
+    override fun update(data: T): T {
         delete(id(data))
         dataobjects.add(data)
+        return data
     }
 
     override fun delete(id: Long) {
-        dataobjects.remove(retrieveByIdOnly(id))
+        dataobjects.remove(retrieveById(id))
     }
 
     fun clear() {
         dataobjects.clear()
     }
-
-    private fun retrieveByIdOnly(id: Long) = dataobjects.firstOrNull { id(it) == id }
 }
 
 private fun <T> id(obj: T): Long {

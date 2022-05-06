@@ -4,11 +4,10 @@ package de.lgblaumeiser.ptm.service
 
 import de.lgblaumeiser.ptm.service.model.Booking
 import de.lgblaumeiser.ptm.service.store.BookingStore
-import de.lgblaumeiser.ptm.service.store.Store
 import java.time.LocalDate
 import java.time.LocalTime
 
-open class BookingService(val store: BookingStore) {
+open class BookingService(private val store: BookingStore) {
     fun getBookings(user: String) = store
         .retrieveAll(user)
         .sortedWith(compareBy<Booking> { it.bookingday }.thenBy { it.starttime })
@@ -30,7 +29,7 @@ open class BookingService(val store: BookingStore) {
         return listofdays
     }
 
-    fun getBookingById(user: String, id: Long) = store.retrieveById(user, id)
+    fun getBookingById(user: String, id: Long): Booking = store.retrieveById(id).takeIf { it.user == user } ?: throw IllegalAccessException("Not owned by specified user")
 
     fun addBooking(
         user: String,
@@ -65,7 +64,7 @@ open class BookingService(val store: BookingStore) {
         activity: Long? = null,
         comment: String? = null,
         id: Long
-    ) = getBookingById(user, id).let {
+    ): Booking = getBookingById(user, id).let {
         store.update(
             Booking(
                 id = it.id,
@@ -84,13 +83,14 @@ open class BookingService(val store: BookingStore) {
         starttime: String,
         duration: Long = 30L,
         id: Long
-    ): Booking {
+    ): List<Booking> {
         val booking = getBookingById(user, id)
         val parsedstarttime = LocalTime.parse(starttime)
         val firstBooking = booking.copy(endtime = parsedstarttime)
         val secondBooking = booking.copy(starttime = parsedstarttime.plusMinutes(duration))
         store.update(firstBooking)
-        return store.create(secondBooking)
+        store.create(secondBooking)
+        return listOf(firstBooking, secondBooking)
     }
 
     fun deleteBooking(user: String, id: Long) = getBookingById(user, id).let { store.delete(id) }

@@ -8,7 +8,7 @@ import de.lgblaumeiser.ptm.service.testPassword2
 import de.lgblaumeiser.ptm.service.testUser
 
 class UserTestStoreComplianceTest : StoreContractComplianceKit<User>() {
-    val store = UserTestStore()
+    private val store = UserTestStore()
 
     override fun store() = store
 

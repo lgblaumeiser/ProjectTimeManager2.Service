@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020, 2021 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
+// SPDX-FileCopyrightText: 2020, 2021, 2022 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
 // SPDX-License-Identifier: MIT
 package de.lgblaumeiser.ptm.service.analysis
 
@@ -26,28 +26,28 @@ const val testAnalysisActivityObjectId1 = 1L
 const val testAnalysisActivityObjectId2 = 2L
 const val testAnalysisActivityObjectId3 = 3L
 
-val testAnalysisDate1 = LocalDate.of(2017, 3, 1)
-val testAnalysisDate2 = LocalDate.of(2017, 3, 6)
-val testAnalysisDate3 = LocalDate.of(2017, 3, 9)
-val testAnalysisDate4 = LocalDate.of(2017, 3, 15)
-val testAnalysisDate5 = LocalDate.of(2017, 3, 24)
-val testAnalysisDate6 = LocalDate.of(2017, 3, 28)
+val testAnalysisDate1: LocalDate = LocalDate.of(2017, 3, 1)
+val testAnalysisDate2: LocalDate = LocalDate.of(2017, 3, 6)
+val testAnalysisDate3: LocalDate = LocalDate.of(2017, 3, 9)
+val testAnalysisDate4: LocalDate = LocalDate.of(2017, 3, 15)
+val testAnalysisDate5: LocalDate = LocalDate.of(2017, 3, 24)
+val testAnalysisDate6: LocalDate = LocalDate.of(2017, 3, 28)
 
-val testAnalysisTime1 = LocalTime.of(12, 34)
-val testAnalysisTime2 = LocalTime.of(13, 57)
-val testAnalysisTime3 = LocalTime.of(14, 35)
-val testAnalysisTime4 = LocalTime.of(8, 15)
-val testAnalysisTime5 = LocalTime.of(17, 25)
-val testAnalysisTime6 = LocalTime.of(9, 42)
-val testAnalysisTime7 = LocalTime.of(15, 39)
-val testAnalysisTime8 = LocalTime.of(18, 45)
-val testAnalysisTime9 = LocalTime.of(21, 45)
+val testAnalysisTime1: LocalTime = LocalTime.of(12, 34)
+val testAnalysisTime2: LocalTime = LocalTime.of(13, 57)
+val testAnalysisTime3: LocalTime = LocalTime.of(14, 35)
+val testAnalysisTime4: LocalTime = LocalTime.of(8, 15)
+val testAnalysisTime5: LocalTime = LocalTime.of(17, 25)
+val testAnalysisTime6: LocalTime = LocalTime.of(9, 42)
+val testAnalysisTime7: LocalTime = LocalTime.of(15, 39)
+val testAnalysisTime8: LocalTime = LocalTime.of(18, 45)
+val testAnalysisTime9: LocalTime = LocalTime.of(21, 45)
 
-val testAnalysisComment1 = "Comment 1"
-val testAnalysisComment2 = "Comment 2"
-val testAnalysisComment3 = "Comment 3"
+const val testAnalysisComment1 = "Comment 1"
+const val testAnalysisComment2 = "Comment 2"
+const val testAnalysisComment3 = "Comment 3"
 
-fun createTestdatabase(): Unit {
+fun createTestdatabase() {
     initializeActivityService()
     activityService.addActivity(
         testAnalysisUsername,

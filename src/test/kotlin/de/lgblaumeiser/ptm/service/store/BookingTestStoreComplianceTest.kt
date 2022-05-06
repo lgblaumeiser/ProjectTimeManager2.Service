@@ -10,7 +10,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 class BookingTestStoreComplianceTest : StoreContractComplianceKit<Booking>() {
-    val store = BookingTestStore()
+    private val store = BookingTestStore()
 
     override fun store() = store
 

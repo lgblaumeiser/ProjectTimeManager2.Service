@@ -52,7 +52,7 @@ class BookingServiceTest : WordSpec({
                 bookingService.getBookings(testBookingUser1, testDate1, testDate2).shouldContainExactly(booking)
                 bookingService.getBookings(testBookingUser1, testDate2)
                 bookingService.getBookingById(testBookingUser1, 1L) == booking
-                shouldThrow<IllegalArgumentException> { bookingService.getBookingById(testBookingUser2, 1L) }
+                shouldThrow<IllegalAccessException> { bookingService.getBookingById(testBookingUser2, 1L) }
                 shouldThrow<IllegalArgumentException> { bookingService.getBookingById(testBookingUser1, 2L) }
             }
         }
@@ -62,7 +62,7 @@ class BookingServiceTest : WordSpec({
             should {
                 bookingService.getBookings(testBookingUser1).shouldContainExactly(testBooking2.copy( id = booking.id ))
                 val retrieved = bookingService.getBookingById(testBookingUser1, 1L)
-                retrieved.equals(testBooking2.copy( id = booking.id ))
+                retrieved == testBooking2.copy( id = booking.id )
             }
         }
 
@@ -110,7 +110,7 @@ class BookingServiceTest : WordSpec({
 
         "changing an existing booking not possible for different user" {
             val booking = addMinimalBooking()
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<IllegalAccessException> {
                 bookingService.changeBooking(
                     user = testBookingUser2,
                     bookingday = testDate2,
@@ -125,11 +125,8 @@ class BookingServiceTest : WordSpec({
     "split booking" should {
         "should create a proper second booking if parameters are right" {
             val booking = addLongBooking()
-            val splited = bookingService.splitBooking(testBookingUser1, testTime2, testDuration, booking.id)
+            val (first, second) = bookingService.splitBooking(testBookingUser1, testTime2, testDuration, booking.id)
             should {
-                val first = bookingService.getBookingById(testBookingUser1, 1L)
-                val second = bookingService.getBookingById(testBookingUser1, 2L)
-                second == splited
                 first.user == testBookingUser1
                 second.user == testBookingUser1
                 first.bookingday == LocalDate.parse(testDate1)
@@ -147,11 +144,8 @@ class BookingServiceTest : WordSpec({
 
         "should create a proper second booking if parameters are right with default duration" {
             val booking = addLongBooking()
-            val splited = bookingService.splitBooking(user = testBookingUser1, starttime = testTime2, id = booking.id)
+            val (first, second) = bookingService.splitBooking(user = testBookingUser1, starttime = testTime2, id = booking.id)
             should {
-                val first = bookingService.getBookingById(testBookingUser1, 1L)
-                val second = bookingService.getBookingById(testBookingUser1, 2L)
-                second == splited
                 first.user == testBookingUser1
                 second.user == testBookingUser1
                 first.bookingday == LocalDate.parse(testDate1)
@@ -169,7 +163,7 @@ class BookingServiceTest : WordSpec({
 
         "throws exception if wrong user is given" {
             val booking = addLongBooking()
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<IllegalAccessException> {
                 bookingService.splitBooking(
                     testBookingUser2,
                     testTime2,
@@ -216,7 +210,7 @@ class BookingServiceTest : WordSpec({
         "throws access exception if booking is deleted by wrong user" {
             val booking = addLongBooking()
             should { bookingService.getBookingById(testBookingUser1, 1L) == booking }
-            shouldThrow<java.lang.IllegalArgumentException> {
+            shouldThrow<IllegalAccessException> {
                 bookingService.deleteBooking(testBookingUser2, booking.id)
             }
         }

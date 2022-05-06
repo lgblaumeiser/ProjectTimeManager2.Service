@@ -7,7 +7,7 @@ import de.lgblaumeiser.ptm.service.model.Activity
 
 class ActivityTestStoreComplianceTest : StoreContractComplianceKit<Activity>() {
 
-    val store = ActivityTestStore()
+    private val store = ActivityTestStore()
 
     override fun store() = store
 

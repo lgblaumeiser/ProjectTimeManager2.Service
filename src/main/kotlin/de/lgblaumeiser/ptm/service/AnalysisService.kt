@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2021 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
+// SPDX-FileCopyrightText: 2021, 2022 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
 // SPDX-License-Identifier: MIT
 package de.lgblaumeiser.ptm.service
 
@@ -6,7 +6,7 @@ import de.lgblaumeiser.ptm.service.analysis.ActivityComputer
 import de.lgblaumeiser.ptm.service.analysis.HourComputer
 import de.lgblaumeiser.ptm.service.analysis.ProjectComputer
 
-class AnalysisService(val activityService: ActivityService, val bookingService: BookingService) {
+class AnalysisService(activityService: ActivityService, bookingService: BookingService) {
     private val projectAnalysis = ProjectComputer(activityService, bookingService)
     private val activityAnalysis = ActivityComputer(activityService, bookingService)
     private val hourAnalysis = HourComputer(bookingService)

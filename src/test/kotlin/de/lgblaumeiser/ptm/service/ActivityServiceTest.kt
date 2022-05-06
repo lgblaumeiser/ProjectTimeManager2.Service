@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
+// SPDX-FileCopyrightText: 2020, 2022 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
 // SPDX-License-Identifier: MIT
 package de.lgblaumeiser.ptm.service
 
@@ -32,7 +32,7 @@ class ActivityServiceTest : WordSpec({
         "added activity can be retrieved again" {
             val activity = addStandardActivity1()
             should {
-                activity.equals(testActivity1)
+                activity == testActivity1
                 activityService.getActivities(testActivityUser1).shouldContainExactly(testActivity1.copy(id = 1L))
             }
         }
@@ -53,12 +53,12 @@ class ActivityServiceTest : WordSpec({
 
         "added activity can be retrieved by id" {
             addStandardActivity1()
-            should { activityService.getActivityById(testActivityUser1, 1L).equals(testActivity1.copy(id = 1L)) }
+            should { activityService.getActivityById(testActivityUser1, 1L) == testActivity1.copy(id = 1L) }
         }
 
         "added activity creates an exception if called with wrong user" {
             addStandardActivity1()
-            shouldThrow<IllegalArgumentException> { activityService.getActivityById(testActivityUser2, 1L) }
+            shouldThrow<IllegalAccessException> { activityService.getActivityById(testActivityUser2, 1L) }
         }
 
         "two added activities for same user can be retrieved in sorted order" {
@@ -89,9 +89,9 @@ class ActivityServiceTest : WordSpec({
             should {
                 val activities = activityService.getActivities(testActivityUser1)
                 activities.size.shouldBe(3)
-                activities.get(0).shouldBe(activity1)
-                activities.get(1).shouldBe(activity3)
-                activities.get(2).shouldBe(activity2)
+                activities[0].shouldBe(activity1)
+                activities[1].shouldBe(activity3)
+                activities[2].shouldBe(activity2)
             }
         }
     }
@@ -107,7 +107,7 @@ class ActivityServiceTest : WordSpec({
             )
             val retrieved = activityService.getActivityById(testActivityUser1, activity.id)
             should {
-                !activity.equals(retrieved)
+                activity != retrieved
                 activity.id == retrieved.id
                 activity.projectid == retrieved.projectid
                 activity.projectname == retrieved.projectname
@@ -119,7 +119,7 @@ class ActivityServiceTest : WordSpec({
 
         "added activity is not changeable by different user" {
             val activity = addStandardActivity1()
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<IllegalAccessException> {
                 activityService.changeActivity(
                     user = testActivityUser2,
                     id = activity.id,
@@ -166,7 +166,7 @@ class ActivityServiceTest : WordSpec({
 
         "an added activity cannot be deleted from other user" {
             val activity = addStandardActivity1()
-            shouldThrow<java.lang.IllegalArgumentException> { activityService.deleteActivity(testActivityUser2, activity.id) }
+            shouldThrow<IllegalAccessException> { activityService.deleteActivity(testActivityUser2, activity.id) }
         }
     }
 })

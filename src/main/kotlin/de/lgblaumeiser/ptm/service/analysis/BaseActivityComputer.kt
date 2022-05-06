@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020, 2021 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
+// SPDX-FileCopyrightText: 2020, 2021, 2022 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
 // SPDX-License-Identifier: MIT
 package de.lgblaumeiser.ptm.service.analysis
 
@@ -10,7 +10,7 @@ import java.time.LocalDate
 
 abstract class BaseActivityComputer(
     private val activityService: ActivityService,
-    val bookingService: BookingService
+    private val bookingService: BookingService
 ) : Analysis<ActivityAnalysisData> {
     override fun analyze(username: String, firstDay: String, firstDayAfter: String): List<ActivityAnalysisData> {
         var resultList =
