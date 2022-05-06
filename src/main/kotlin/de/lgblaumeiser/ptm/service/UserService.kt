@@ -7,7 +7,7 @@ import de.lgblaumeiser.ptm.service.model.User
 import de.lgblaumeiser.ptm.service.store.Store
 import java.util.*
 
-class UserService(
+open class UserService(
     private val store: Store<User>,
     private val activities: ActivityService,
     private val bookings: BookingService

@@ -5,7 +5,7 @@ package de.lgblaumeiser.ptm.service
 import de.lgblaumeiser.ptm.service.model.Activity
 import de.lgblaumeiser.ptm.service.store.Store
 
-class ActivityService(val store: Store<Activity>) {
+open class ActivityService(val store: Store<Activity>) {
     fun getActivities(user: String, hidden: Boolean = false) = store
         .retrieveAll(user)
         .filter { hidden || !it.hidden }

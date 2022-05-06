@@ -8,7 +8,7 @@ import de.lgblaumeiser.ptm.service.store.Store
 import java.time.LocalDate
 import java.time.LocalTime
 
-class BookingService(val store: BookingStore) {
+open class BookingService(val store: BookingStore) {
     fun getBookings(user: String) = store
         .retrieveAll(user)
         .sortedWith(compareBy<Booking> { it.bookingday }.thenBy { it.starttime })
