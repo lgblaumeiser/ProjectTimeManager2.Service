@@ -24,7 +24,7 @@ class ActivityServiceTest : WordSpec({
 
     "getActivityById" should {
         "return an exception if asked for a id that do not exist" {
-            shouldThrow<IllegalStateException> { activityService.getActivityById(testActivityUser1, 1L) }
+            shouldThrow<IllegalArgumentException> { activityService.getActivityById(testActivityUser1, 1L) }
         }
     }
 
@@ -58,7 +58,7 @@ class ActivityServiceTest : WordSpec({
 
         "added activity creates an exception if called with wrong user" {
             addStandardActivity1()
-            shouldThrow<IllegalStateException> { activityService.getActivityById(testActivityUser2, 1L) }
+            shouldThrow<IllegalArgumentException> { activityService.getActivityById(testActivityUser2, 1L) }
         }
 
         "two added activities for same user can be retrieved in sorted order" {
@@ -119,7 +119,7 @@ class ActivityServiceTest : WordSpec({
 
         "added activity is not changeable by different user" {
             val activity = addStandardActivity1()
-            shouldThrow<IllegalStateException> {
+            shouldThrow<IllegalArgumentException> {
                 activityService.changeActivity(
                     user = testActivityUser2,
                     id = activity.id,
@@ -166,7 +166,7 @@ class ActivityServiceTest : WordSpec({
 
         "an added activity cannot be deleted from other user" {
             val activity = addStandardActivity1()
-            shouldThrow<java.lang.IllegalStateException> { activityService.deleteActivity(testActivityUser2, activity.id) }
+            shouldThrow<java.lang.IllegalArgumentException> { activityService.deleteActivity(testActivityUser2, activity.id) }
         }
     }
 })

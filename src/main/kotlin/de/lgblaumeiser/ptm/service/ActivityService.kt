@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
+// SPDX-FileCopyrightText: 2020, 2022 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
 // SPDX-License-Identifier: MIT
 package de.lgblaumeiser.ptm.service
 
@@ -11,8 +11,7 @@ class ActivityService(val store: Store<Activity>) {
         .filter { hidden || !it.hidden }
         .sortedWith(compareBy<Activity> { it.projectid.uppercase() }.thenBy { it.activityid.uppercase() })
 
-    fun getActivityById(user: String, id: Long): Activity = store
-        .retrieveById(user, id)
+    fun getActivityById(user: String, id: Long): Activity = store.retrieveById(user, id)
 
     fun addActivity(
         user: String,
@@ -21,7 +20,6 @@ class ActivityService(val store: Store<Activity>) {
         activityname: String,
         activityid: String
     ) = store.create(
-        user,
         Activity(
             user = user,
             projectname = projectname,
@@ -41,7 +39,6 @@ class ActivityService(val store: Store<Activity>) {
         id: Long
     ) = getActivityById(user, id).let {
         store.update(
-            user,
             Activity(
                 id = it.id,
                 user = it.user,
@@ -55,5 +52,5 @@ class ActivityService(val store: Store<Activity>) {
     }
 
     fun deleteActivity(user: String, id: Long) =
-        getActivityById(user, id).let { store.delete(user, id) }
+        getActivityById(user, id).let { store.delete(id) }
 }

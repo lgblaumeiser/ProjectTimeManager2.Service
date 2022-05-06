@@ -19,15 +19,10 @@ abstract class TestStore<T> : Store<T> {
 
     override fun retrieveAll(user: String) = dataobjects.toList().filter { username(it).equals(user, true) }
 
-    override fun retrieveById(user: String, id: Long) = dataobjects
-        .filter { id(it) == id }.firstOrNull { username(it).equals(user, true) }
-        ?: throw IllegalStateException("Object with id $id not found")
+    override fun retrieveById(user: String, id: Long) = retrieveByIdOnly(id)?.takeIf { username(it).equals(user, true) }
+        ?: throw IllegalArgumentException("Object with id $id not found")
 
     override fun create(data: T): T {
-        dataobjects.filter { username(it).equals(user, true) && hasProperty(it, name, values) }
-
-    override fun create(user: String, data: T): T {
-        require(username(data).equals(user, true))
         val id = nextId()
         val toCopy = copyFun.instanceParameter!!
         val idParam = copyFun.findParameterByName("id")!!
@@ -43,19 +38,20 @@ abstract class TestStore<T> : Store<T> {
 
     private fun nextId() = (dataobjects.maxOfOrNull { id(it) } ?: 0L) + 1L
 
-    override fun update(user: String, data: T) {
-        require(username(data).equals(user, true))
-        delete(username(data), id(data))
+    override fun update(data: T) {
+        delete(id(data))
         dataobjects.add(data)
     }
 
-    override fun delete(user: String, id: Long) {
-        dataobjects.remove(retrieveById(user, id))
+    override fun delete(id: Long) {
+        dataobjects.remove(retrieveByIdOnly(id))
     }
 
     fun clear() {
         dataobjects.clear()
     }
+
+    private fun retrieveByIdOnly(id: Long) = dataobjects.firstOrNull { id(it) == id }
 }
 
 private fun <T> id(obj: T): Long {

@@ -8,14 +8,15 @@ import java.time.LocalDate
 interface Store<T> {
     fun retrieveAll(user: String): List<T>
 
-    // Throws IllegalStateException, if element is not in storage or not accesible for user
+    // Throws IllegalArgumentException, if element is not in storage or not accessible for user
     fun retrieveById(user: String, id: Long): T
 
     fun create(data: T): T
 
-    fun create(user: String, data: T): T
+    fun update(data: T)
 
-    fun update(user: String, data: T)
+    fun delete(id: Long)
+}
 
 interface BookingStore: Store<Booking> {
     fun retrieveByBookingDays(user: String, days: List<LocalDate>): List<Booking>

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
+// SPDX-FileCopyrightText: 2020, 2022 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
 // SPDX-License-Identifier: MIT
 package de.lgblaumeiser.ptm.service
 
@@ -38,7 +38,7 @@ class BookingServiceTest : WordSpec({
 
     "getBookingById" should {
         "return an exception if asked for a id that do not exist" {
-            shouldThrow<IllegalStateException> { bookingService.getBookingById(testBookingUser1, 1L) }
+            shouldThrow<IllegalArgumentException> { bookingService.getBookingById(testBookingUser1, 1L) }
         }
     }
 
@@ -52,8 +52,8 @@ class BookingServiceTest : WordSpec({
                 bookingService.getBookings(testBookingUser1, testDate1, testDate2).shouldContainExactly(booking)
                 bookingService.getBookings(testBookingUser1, testDate2)
                 bookingService.getBookingById(testBookingUser1, 1L) == booking
-                shouldThrow<IllegalStateException> { bookingService.getBookingById(testBookingUser2, 1L) }
-                shouldThrow<IllegalStateException> { bookingService.getBookingById(testBookingUser1, 2L) }
+                shouldThrow<IllegalArgumentException> { bookingService.getBookingById(testBookingUser2, 1L) }
+                shouldThrow<IllegalArgumentException> { bookingService.getBookingById(testBookingUser1, 2L) }
             }
         }
 
@@ -110,7 +110,7 @@ class BookingServiceTest : WordSpec({
 
         "changing an existing booking not possible for different user" {
             val booking = addMinimalBooking()
-            shouldThrow<IllegalStateException> {
+            shouldThrow<IllegalArgumentException> {
                 bookingService.changeBooking(
                     user = testBookingUser2,
                     bookingday = testDate2,
@@ -169,7 +169,7 @@ class BookingServiceTest : WordSpec({
 
         "throws exception if wrong user is given" {
             val booking = addLongBooking()
-            shouldThrow<IllegalStateException> {
+            shouldThrow<IllegalArgumentException> {
                 bookingService.splitBooking(
                     testBookingUser2,
                     testTime2,
@@ -208,15 +208,15 @@ class BookingServiceTest : WordSpec({
     "delete booking" should {
         "removes booking if properties match" {
             val booking = addLongBooking()
-            should { bookingService.getBookingById(testBookingUser1, 1L).equals(booking) }
+            should { bookingService.getBookingById(testBookingUser1, 1L) == booking }
             bookingService.deleteBooking(testBookingUser1, booking.id)
-            shouldThrow<IllegalStateException> { bookingService.getBookingById(testBookingUser1, booking.id) }
+            shouldThrow<IllegalArgumentException> { bookingService.getBookingById(testBookingUser1, booking.id) }
         }
 
         "throws access exception if booking is deleted by wrong user" {
             val booking = addLongBooking()
-            should { bookingService.getBookingById(testBookingUser1, 1L).equals(booking) }
-            shouldThrow<java.lang.IllegalStateException> {
+            should { bookingService.getBookingById(testBookingUser1, 1L) == booking }
+            shouldThrow<java.lang.IllegalArgumentException> {
                 bookingService.deleteBooking(testBookingUser2, booking.id)
             }
         }

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
+// SPDX-FileCopyrightText: 2020, 2022 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
 // SPDX-License-Identifier: MIT
 package de.lgblaumeiser.ptm.service.store
 
@@ -43,7 +43,7 @@ abstract class StoreContractComplianceKit<T> : WordSpec() {
             "create object allows to retrieve the object" {
                 val tostore = testObject1()
                 should { username(tostore) == userid1 }
-                val created = store().create(userid1, tostore)
+                val created = store().create(tostore)
                 should {
                     compareDataToStored(created, tostore)
                     store().retrieveAll(userid1).shouldContainExactly(created)
@@ -54,11 +54,11 @@ abstract class StoreContractComplianceKit<T> : WordSpec() {
             "create object created user specific object that cannot be retrieved for different user" {
                 val tostore = testObject1()
                 should { username(tostore) == userid1 }
-                val created = store().create(userid1, tostore)
+                val created = store().create(tostore)
                 should {
                     store().retrieveAll(userid2).shouldBeEmpty()
                 }
-                shouldThrow<IllegalStateException> { store().retrieveById(userid2, id(created)) }
+                shouldThrow<IllegalArgumentException> { store().retrieveById(userid2, id(created)) }
             }
 
             "create object with two different users return the objects associated to the right user" {
@@ -66,8 +66,8 @@ abstract class StoreContractComplianceKit<T> : WordSpec() {
                 should { username(tostore1) == userid1 }
                 val tostore2 = testObject2()
                 should { username(tostore2) == userid2 }
-                val created1 = store().create(userid1, tostore1)
-                val created2 = store().create(userid2, tostore2)
+                val created1 = store().create(tostore1)
+                val created2 = store().create(tostore2)
                 should {
                     compareDataToStored(created1, tostore1)
                     store().retrieveAll(userid1).shouldContainExactly(created1)
@@ -83,19 +83,10 @@ abstract class StoreContractComplianceKit<T> : WordSpec() {
             "Delete object should remove the referenced object" {
                 val tostore = testObject1()
                 should { username(tostore) == userid1 }
-                val created = store().create(userid1, tostore)
+                val created = store().create(tostore)
                 should { store().retrieveAll(userid1).shouldContainExactly(created) }
-                store().delete(userid1, id(created))
+                store().delete(id(created))
                 should { store().retrieveAll(userid1).shouldBeEmpty() }
-            }
-
-            "Delete object should not remove anything, if wrong user is given" {
-                val tostore = testObject1()
-                should { username(tostore) == userid1 }
-                val created = store().create(userid1, tostore)
-                should { store().retrieveAll(userid1).shouldContainExactly(created) }
-                shouldThrow<IllegalStateException> { store().delete(userid2, id(created)) }
-                should { store().retrieveAll(userid1).shouldContainExactly(created) }
             }
         }
 
@@ -103,23 +94,12 @@ abstract class StoreContractComplianceKit<T> : WordSpec() {
             "Update object should work with apprpriate data" {
                 val tostore = testObject1()
                 should { username(tostore) == userid1 }
-                val created = store().create(userid1, tostore)
+                val created = store().create(tostore)
                 val toupdate = testObject1Updated(id(created))
                 should { username(toupdate) == userid1 }
                 should { id(toupdate) == id(created) }
-                store().update(userid1, toupdate)
+                store().update(toupdate)
                 should { store().retrieveById(userid1, id(created)).shouldBe(toupdate) }
-            }
-
-            "Update object should not change anything with wrong user" {
-                val tostore = testObject1()
-                should { username(tostore) == userid1 }
-                val created = store().create(userid1, tostore)
-                val toupdate = testObject1Updated(id(created))
-                should { username(toupdate) == userid1 }
-                should { id(toupdate) == id(created) }
-                shouldThrow<IllegalArgumentException> { store().update(userid2, toupdate) }
-                should { store().retrieveById(userid1, id(created)).shouldBe(created) }
             }
         }
     }
