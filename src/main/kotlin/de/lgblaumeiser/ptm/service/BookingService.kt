@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
+// SPDX-FileCopyrightText: 2020, 2022 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
 // SPDX-License-Identifier: MIT
 package de.lgblaumeiser.ptm.service
 
@@ -7,13 +7,13 @@ import de.lgblaumeiser.ptm.service.store.Store
 import java.time.LocalDate
 import java.time.LocalTime
 
-class BookingService(val store: Store<Booking>) {
+class BookingService(val store: BookingStore) {
     fun getBookings(user: String) = store
         .retrieveAll(user)
         .sortedWith(compareBy<Booking> { it.bookingday }.thenBy { it.starttime })
 
     fun getBookings(user: String, startday: String, endday: String? = null): List<Booking> = store
-        .retrieveByProperty(user, "bookingday", computeDays(startday, endday))
+        .retrieveByBookingDays(user, computeDays(startday, endday))
         .sortedWith(compareBy<Booking> { it.bookingday }.thenBy { it.starttime })
 
     private fun computeDays(startday: String, endday: String?): List<LocalDate> {

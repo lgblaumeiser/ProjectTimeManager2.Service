@@ -29,9 +29,6 @@ abstract class StoreContractComplianceKit<T> : WordSpec() {
     // return the username stored in the object
     abstract fun username(obj: T): String
 
-    abstract fun propertyName(): String?
-    abstract fun propertyValue(): Any?
-
     abstract fun clearStore()
 
     val userid1 = "TestUserId"
@@ -78,24 +75,6 @@ abstract class StoreContractComplianceKit<T> : WordSpec() {
                     compareDataToStored(created2, tostore2)
                     store().retrieveAll(userid2).shouldContainExactly(created2)
                     store().retrieveById(userid2, id(created2))
-                }
-            }
-        }
-
-        "retrieve by id" should {
-            "Retrieve by id works for the defined property (ignored when null returned" {
-                val tostore = testObject1()
-                should { username(tostore) == userid1 }
-                val created = store().create(userid1, tostore)
-                should {
-                    val propName = propertyName()
-                    val propValue = propertyValue()
-                    propName?.let {
-                        propValue?.let {
-                            store().retrieveByProperty(userid1, propName, listOf(propValue))
-                                .shouldContainExactly(created)
-                        }
-                    }
                 }
             }
         }

@@ -1,9 +1,11 @@
-// SPDX-FileCopyrightText: 2020 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
+// SPDX-FileCopyrightText: 2020, 2022 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
 // SPDX-License-Identifier: MIT
 package de.lgblaumeiser.ptm.service.store
 
 import de.lgblaumeiser.ptm.service.*
 import de.lgblaumeiser.ptm.service.model.Booking
+import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.should
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -25,11 +27,20 @@ class BookingTestStoreComplianceTest : StoreContractComplianceKit<Booking>() {
 
     override fun username(obj: Booking) = obj.user
 
-    override fun propertyName() = "bookingday"
-
-    override fun propertyValue() = LocalDate.parse(testDate1)
-
     override fun clearStore() {
         store.clear()
+    }
+
+    init {
+        "retrieve by id" should {
+            "Retrieve by id works for the bookingsdays" {
+                val tostore = testObject1()
+                should { username(tostore) == userid1 }
+                val created = store().create(tostore)
+                should {
+                     store().retrieveByBookingDays(userid1, listOf(LocalDate.parse(testDate1))).shouldContainExactly(created)
+                }
+            }
+        }
     }
 }

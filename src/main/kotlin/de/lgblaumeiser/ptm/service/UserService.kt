@@ -83,10 +83,10 @@ class UserService(
         authenticateOrThrow(username, password)
         activities.getActivities(username).forEach { activities.deleteActivity(username, it.id) }
         bookings.getBookings(username).forEach { bookings.deleteBooking(username, it.id) }
-        retrieveExistingUserRecord(username).let { store.delete(username, it.id) }
+        retrieveExistingUserRecord(username).let { store.delete(it.id) }
     }
 
-    private fun retrieveUserRecord(user: String) =
+    internal fun retrieveUserRecord(user: String) = store.retrieveAll(user).firstOrNull()
         store.retrieveByProperty(user, "username", listOf(user)).firstOrNull()
 
     private fun retrieveExistingUserRecord(user: String) =

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
+// SPDX-FileCopyrightText: 2020, 2022 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
 // SPDX-License-Identifier: MIT
 package de.lgblaumeiser.ptm.service.store
 
@@ -23,10 +23,6 @@ class ActivityTestStoreComplianceTest : StoreContractComplianceKit<Activity>() {
     override fun id(obj: Activity) = obj.id
 
     override fun username(obj: Activity) = obj.user
-
-    override fun propertyName() = null
-
-    override fun propertyValue() = null
 
     override fun clearStore() {
         store.clear()

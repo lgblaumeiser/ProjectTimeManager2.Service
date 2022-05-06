@@ -1,11 +1,13 @@
-// SPDX-FileCopyrightText: 2020 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
+// SPDX-FileCopyrightText: 2020, 2022 Lars Geyer-Blaumeiser <lars@lgblaumeiser.de>
 // SPDX-License-Identifier: MIT
 package de.lgblaumeiser.ptm.service
 
 import de.lgblaumeiser.ptm.service.model.Activity
 import de.lgblaumeiser.ptm.service.model.Booking
 import de.lgblaumeiser.ptm.service.model.User
+import de.lgblaumeiser.ptm.service.store.BookingStore
 import de.lgblaumeiser.ptm.service.store.Store
+import java.time.LocalDate
 import kotlin.reflect.KCallable
 import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.full.instanceParameter
@@ -13,7 +15,7 @@ import kotlin.reflect.full.instanceParameter
 abstract class TestStore<T> : Store<T> {
     abstract val copyFun: KCallable<T>
 
-    private val dataobjects = mutableListOf<T>()
+    protected val dataobjects = mutableListOf<T>()
 
     override fun retrieveAll(user: String) = dataobjects.toList().filter { username(it).equals(user, true) }
 
@@ -21,7 +23,7 @@ abstract class TestStore<T> : Store<T> {
         .filter { id(it) == id }.firstOrNull { username(it).equals(user, true) }
         ?: throw IllegalStateException("Object with id $id not found")
 
-    override fun retrieveByProperty(user: String, name: String, values: Collection<Any>) =
+    override fun create(data: T): T {
         dataobjects.filter { username(it).equals(user, true) && hasProperty(it, name, values) }
 
     override fun create(user: String, data: T): T {
@@ -74,28 +76,6 @@ private fun <T> username(obj: T): String {
     throw IllegalStateException("Unknown object type")
 }
 
-private fun <T> hasProperty(obj: T, name: String, values: Collection<Any>): Boolean {
-    when (obj) {
-        is User -> return userHasProperty(obj, name, values)
-        is Activity -> return false
-        is Booking -> return bookingHasProperty(obj, name, values)
-    }
-    return false
-}
-
-private fun userHasProperty(user: User, name: String, values: Collection<Any>): Boolean {
-    when (name) {
-        "username" -> return values.contains(user.username)
-    }
-    return false
-}
-
-private fun bookingHasProperty(booking: Booking, name: String, values: Collection<Any>) =
-    when (name) {
-        "bookingday" -> values.contains(booking.bookingday)
-        else -> false
-    }
-
 class UserTestStore : TestStore<User>() {
     override val copyFun = User::copy
 }
@@ -104,6 +84,9 @@ class ActivityTestStore : TestStore<Activity>() {
     override val copyFun = Activity::copy
 }
 
-class BookingTestStore : TestStore<Booking>() {
+class BookingTestStore : TestStore<Booking>(), BookingStore {
     override val copyFun = Booking::copy
+
+    override fun retrieveByBookingDays(user: String, days: List<LocalDate>): List<Booking> =
+        dataobjects.filter { it.user.equals(user, true) && days.contains(it.bookingday) }
 }
